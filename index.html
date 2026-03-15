@@ -873,13 +873,17 @@ function addRow() {
   const dia = parseInt(document.getElementById('inp-dia').value);
   const len = parseFloat(document.getElementById('inp-len').value);
   const qty = parseInt(document.getElementById('inp-qty').value);
-  const stockLen = parseFloat(document.getElementById('stock-len').value) || 12;
+  const stockLenRaw = parseFloat(document.getElementById('stock-len').value);
+  const stockLen = (!isNaN(stockLenRaw) && stockLenRaw > 0) ? stockLenRaw : 12;
 
-  if (!len || len <= 0 || len > stockLen) {
-    flash('Geçerli bir boy girin (0 < boy ≤ tam boy uzunluğu).'); return;
+  if (isNaN(len) || len <= 0) {
+    flash('Geçerli bir boy girin (örn: 4.20)'); return;
   }
-  if (!qty || qty <= 0 || !Number.isInteger(qty)) {
-    flash('Geçerli bir adet girin.'); return;
+  if (len > stockLen) {
+    flash(`Boy, tam boy uzunluğundan (${stockLen} m) büyük olamaz.`); return;
+  }
+  if (isNaN(qty) || qty <= 0) {
+    flash('Geçerli bir adet girin (örn: 10)'); return;
   }
 
   // Merge with existing same dia+len
@@ -887,7 +891,7 @@ function addRow() {
   if (existing) {
     existing.qty += qty;
   } else {
-    rows.push({ dia, len, qty, id: Date.now() + Math.random() });
+    rows.push({ dia, len, qty, id: Date.now() + '_' + Math.floor(Math.random()*1e6) });
   }
 
   renderTable();
@@ -941,7 +945,7 @@ function renderTable() {
       <td><span class="mono">${r.len.toFixed(2)}</span></td>
       <td><span class="mono">${r.qty}</span></td>
       <td><span class="mono" style="color:var(--accent)">${(r.len * r.qty).toFixed(2)}</span></td>
-      <td><button class="delete-btn" onclick="removeRow(${r.id})" title="Sil">✕</button></td>
+      <td><button class="delete-btn" onclick="removeRow('${r.id}')" title="Sil">✕</button></td>
     </tr>`).join('');
 }
 
@@ -962,7 +966,7 @@ function importCSV(e) {
         const len = parseFloat(parts[1].replace(',', '.'));
         const qty = parseInt(parts[2]);
         if (dia > 0 && len > 0 && qty > 0 && isFinite(len)) {
-          rows.push({ dia, len, qty, id: Date.now() + Math.random() });
+          rows.push({ dia, len, qty, id: Date.now() + '_' + Math.floor(Math.random()*1e6) });
           added++;
         }
       }
@@ -995,7 +999,7 @@ function flash(msg, type = 'err') {
     padding:10px 20px;border-radius:8px;font-family:'JetBrains Mono',monospace;
     font-size:0.72rem;z-index:9999;white-space:nowrap;
     box-shadow:0 4px 20px rgba(0,0,0,0.4);
-    animation: fadeUp .2s ease;
+    transition:opacity .3s;
   `;
   el.textContent = msg;
   document.body.appendChild(el);
