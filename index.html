@@ -15,8 +15,6 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230b0d12'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230b0d12'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --bg:       #0b0d12;
@@ -55,7 +53,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Barlow', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.5;
@@ -87,14 +85,14 @@ header {
   box-shadow: 0 4px 12px rgba(245,166,35,0.3);
 }
 .header-title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   font-size: 1.45rem;
   letter-spacing: 2.5px;
   color: var(--text);
   line-height: 1;
 }
 .header-ver {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.62rem;
   color: var(--accent);
   background: rgba(245,166,35,0.1);
@@ -106,7 +104,7 @@ header {
 }
 .header-spacer { flex: 1; }
 .header-info {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.62rem;
   color: var(--muted);
   letter-spacing: 0.5px;
@@ -121,7 +119,7 @@ header {
   border-bottom: 1px solid rgba(245,166,35,0.25);
   padding: 9px 20px;
   text-align: center;
-  font-family: 'Barlow', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   font-size: 0.75rem;
   color: var(--text2);
 }
@@ -174,14 +172,14 @@ header {
   flex-shrink: 0;
 }
 .card-title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   letter-spacing: 1.5px;
   font-size: 0.95rem;
   color: var(--text);
 }
 .card-badge {
   margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.6rem;
   color: var(--muted);
   background: var(--surface3);
@@ -199,7 +197,7 @@ header {
 }
 .tab-btn {
   padding: 10px 20px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.67rem;
   color: var(--muted);
   cursor: pointer;
@@ -219,7 +217,7 @@ header {
 .field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
 .field-label {
   font-size: 0.65rem;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -230,7 +228,7 @@ input, select {
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.85rem;
   padding: 9px 12px;
   outline: none;
@@ -256,7 +254,7 @@ select option { background: var(--surface2); }
   padding: 10px 14px;
   border: none;
   border-radius: 8px;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   font-size: 0.9rem;
   letter-spacing: 2px;
   cursor: pointer;
@@ -317,7 +315,7 @@ select option { background: var(--surface2); }
 table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
 thead { position: sticky; top: 0; z-index: 1; }
 th {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.6rem;
   color: var(--muted);
   text-transform: uppercase;
@@ -343,12 +341,12 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   border: 1px solid rgba(50,213,131,0.22);
   border-radius: 4px;
   padding: 1px 7px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.72rem;
   font-weight: 600;
 }
 
-.mono { font-family: 'JetBrains Mono', monospace; }
+.mono { font-family: ui-monospace, 'SF Mono', 'Courier New', monospace; }
 
 .delete-btn {
   background: none; border: none; color: var(--muted);
@@ -404,7 +402,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   opacity: 0.6;
 }
 .stat-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.6rem;
   color: var(--muted);
   text-transform: uppercase;
@@ -412,7 +410,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   margin-bottom: 6px;
 }
 .stat-value {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   font-size: 1.65rem;
   letter-spacing: 1px;
   line-height: 1;
@@ -430,7 +428,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   flex-wrap: wrap;
 }
 .section-heading h3 {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   letter-spacing: 1.5px;
   color: var(--text2);
   font-size: 0.88rem;
@@ -438,7 +436,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 }
 .badge-fire {
   display: inline-flex; align-items: center; gap: 3px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.62rem;
   background: rgba(240,96,96,0.1);
   color: var(--red);
@@ -447,7 +445,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   padding: 2px 7px;
 }
 .badge-model {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.62rem;
   background: rgba(91,156,246,0.1);
   color: var(--blue);
@@ -476,7 +474,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 }
 .bar-label-group { display: flex; align-items: center; gap: 6px; }
 .bar-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   color: var(--muted);
   font-size: 0.68rem;
 }
@@ -486,12 +484,12 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   border: 1px solid rgba(245,166,35,0.25);
   border-radius: 4px;
   padding: 1px 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.65rem;
   font-weight: 600;
 }
 .bar-info {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.67rem;
   color: var(--muted);
 }
@@ -512,7 +510,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.6rem;
   font-weight: 600;
   overflow: hidden;
@@ -570,7 +568,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 }
 
 .bar-caption {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.63rem;
   color: var(--muted);
   margin-top: 4px;
@@ -632,12 +630,12 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .summary-table-wrap tfoot td {
   background: rgba(245,166,35,0.06);
   border-top: 2px solid rgba(245,166,35,0.25);
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   letter-spacing: 0.5px;
   font-size: 0.9rem;
 }
 .summary-heading {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Impact', 'Arial Narrow', Arial, sans-serif;
   letter-spacing: 2px;
   font-size: 0.9rem;
   color: var(--accent);
@@ -687,7 +685,7 @@ footer {
   background: rgba(13,16,22,0.5);
 }
 footer p {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, 'SF Mono', 'Courier New', monospace;
   font-size: 0.65rem;
   color: var(--muted);
   letter-spacing: 0.5px;
@@ -784,7 +782,7 @@ footer strong { color: var(--accent); font-weight: 600; }
     <input type="file" id="csv-file" accept=".csv,.txt,.xlsx" style="display:none" onchange="importCSV(event)">
     <p style="font-size:0.7rem;color:var(--muted);line-height:1.8">
       CSV formatı:<br>
-      <code style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent)">
+      <code style="font-family:ui-monospace,'SF Mono','Courier New',monospace;font-size:0.68rem;color:var(--accent)">
         12;4.20;5<br>16;3.60;8<br>10;2.80;12
       </code>
     </p>
@@ -870,34 +868,46 @@ function switchTab(name) {
 //  ROWS
 // ═══════════════════════════════════════════════════
 function addRow() {
-  const dia = parseInt(document.getElementById('inp-dia').value);
-  const len = parseFloat(document.getElementById('inp-len').value);
-  const qty = parseInt(document.getElementById('inp-qty').value);
-  const stockLenRaw = parseFloat(document.getElementById('stock-len').value);
-  const stockLen = (!isNaN(stockLenRaw) && stockLenRaw > 0) ? stockLenRaw : 12;
+  var diaEl  = document.getElementById('inp-dia');
+  var lenEl  = document.getElementById('inp-len');
+  var qtyEl  = document.getElementById('inp-qty');
+  var stEl   = document.getElementById('stock-len');
+
+  if (!diaEl || !lenEl || !qtyEl) { alert('Form elemanları bulunamadı.'); return; }
+
+  var dia      = parseInt(diaEl.value, 10);
+  var len      = parseFloat(lenEl.value);
+  var qty      = parseInt(qtyEl.value, 10);
+  var stRaw    = parseFloat(stEl ? stEl.value : '12');
+  var stockLen = (!isNaN(stRaw) && stRaw > 0) ? stRaw : 12;
 
   if (isNaN(len) || len <= 0) {
     flash('Geçerli bir boy girin (örn: 4.20)'); return;
   }
-  if (len > stockLen) {
-    flash(`Boy, tam boy uzunluğundan (${stockLen} m) büyük olamaz.`); return;
+  if (len > stockLen + 0.0001) {
+    flash('Boy, tam boy uzunluğundan büyük olamaz (' + stockLen + ' m)'); return;
   }
-  if (isNaN(qty) || qty <= 0) {
+  if (isNaN(qty) || qty < 1) {
     flash('Geçerli bir adet girin (örn: 10)'); return;
   }
 
   // Merge with existing same dia+len
-  const existing = rows.find(r => r.dia === dia && Math.abs(r.len - len) < 0.0001);
+  var existing = null;
+  for (var i = 0; i < rows.length; i++) {
+    if (rows[i].dia === dia && Math.abs(rows[i].len - len) < 0.0001) {
+      existing = rows[i]; break;
+    }
+  }
   if (existing) {
     existing.qty += qty;
   } else {
-    rows.push({ dia, len, qty, id: Date.now() + '_' + Math.floor(Math.random()*1e6) });
+    rows.push({ dia: dia, len: len, qty: qty, id: Date.now() + '_' + Math.floor(Math.random() * 1000000) });
   }
 
   renderTable();
-  document.getElementById('inp-len').value = '';
-  document.getElementById('inp-qty').value = '';
-  document.getElementById('inp-len').focus();
+  lenEl.value = '';
+  qtyEl.value = '';
+  lenEl.focus();
 }
 
 function removeRow(id) {
@@ -986,24 +996,35 @@ function importCSV(e) {
 // ═══════════════════════════════════════════════════
 //  FLASH MESSAGE
 // ═══════════════════════════════════════════════════
-function flash(msg, type = 'err') {
-  const existing = document.getElementById('flash-msg');
-  if (existing) existing.remove();
-  const el = document.createElement('div');
-  el.id = 'flash-msg';
-  const color = type === 'ok' ? 'var(--green)' : 'var(--red)';
-  const bg = type === 'ok' ? 'rgba(50,213,131,0.1)' : 'rgba(240,96,96,0.1)';
-  el.style.cssText = `
-    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-    background:${bg};color:${color};border:1px solid ${color};
-    padding:10px 20px;border-radius:8px;font-family:'JetBrains Mono',monospace;
-    font-size:0.72rem;z-index:9999;white-space:nowrap;
-    box-shadow:0 4px 20px rgba(0,0,0,0.4);
-    transition:opacity .3s;
-  `;
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+function flash(msg, type) {
+  try {
+    var existing = document.getElementById('flash-msg');
+    if (existing) existing.remove();
+    var el = document.createElement('div');
+    el.id = 'flash-msg';
+    var isOk = (type === 'ok');
+    var color = isOk ? '#32d583' : '#f06060';
+    var bg    = isOk ? 'rgba(50,213,131,0.15)' : 'rgba(240,96,96,0.15)';
+    el.style.position   = 'fixed';
+    el.style.bottom     = '24px';
+    el.style.left       = '50%';
+    el.style.transform  = 'translateX(-50%)';
+    el.style.background = bg;
+    el.style.color      = color;
+    el.style.border     = '1px solid ' + color;
+    el.style.padding    = '10px 20px';
+    el.style.borderRadius = '8px';
+    el.style.fontFamily = 'monospace';
+    el.style.fontSize   = '13px';
+    el.style.zIndex     = '9999';
+    el.style.whiteSpace = 'nowrap';
+    el.style.boxShadow  = '0 4px 20px rgba(0,0,0,0.5)';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(function() { if (el.parentNode) el.remove(); }, 3000);
+  } catch(e) {
+    alert(msg);
+  }
 }
 
 // ═══════════════════════════════════════════════════
