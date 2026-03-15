@@ -1,610 +1,895 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Çubuk Kesim Optimizasyonu</title>
-
-<!-- PWA Meta -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kesim Opt.">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0d0f14">
+<meta name="theme-color" content="#0b0d12">
 <meta name="description" content="Çelik çubuk kesim optimizasyonu — İnşaat Mühendisi İlker Çelik">
 
-<!-- PWA Icons (inline SVG data URI) -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d0f14'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d0f14'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230b0d12'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230b0d12'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%2332d583'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
 
-<!-- PWA destekli -->
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #161a22;
-    --surface2: #1e2430;
-    --border: #2a3040;
-    --accent: #f5a623;
-    --accent2: #e05c2a;
-    --green: #3ecf8e;
-    --red: #f06060;
-    --text: #dce3ef;
-    --muted: #6b7a99;
-    --full-bar: 12;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Barlow', sans-serif;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 20% 0%, rgba(245,166,35,0.07) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 100%, rgba(224,92,42,0.06) 0%, transparent 50%);
-  }
+:root {
+  --bg:       #0b0d12;
+  --surface:  #13161e;
+  --surface2: #1a1f2b;
+  --surface3: #212736;
+  --border:   #252c3d;
+  --border2:  #2e3750;
+  --accent:   #f5a623;
+  --accent2:  #e05c2a;
+  --green:    #32d583;
+  --blue:     #5b9cf6;
+  --red:      #f06060;
+  --purple:   #b692f6;
+  --text:     #e2e8f5;
+  --text2:    #a0aec0;
+  --muted:    #5a6a8a;
 
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 18px 40px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: rgba(22,26,34,0.8);
-    backdrop-filter: blur(10px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo-icon {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: 2px;
-    color: var(--text);
-  }
-  header span {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent);
-    background: rgba(245,166,35,0.12);
-    border: 1px solid rgba(245,166,35,0.25);
-    padding: 2px 8px;
-    border-radius: 4px;
-    margin-left: 8px;
-  }
+  /* segment palette — 10 vivid colors */
+  --c0: #32d583; --c0t: #071a0f;
+  --c1: #f5a623; --c1t: #1a0a00;
+  --c2: #5b9cf6; --c2t: #060e1f;
+  --c3: #f472b6; --c3t: #1a0612;
+  --c4: #a78bfa; --c4t: #0d0820;
+  --c5: #34d399; --c5t: #051510;
+  --c6: #fbbf24; --c6t: #1a1100;
+  --c7: #60a5fa; --c7t: #060e1f;
+  --c8: #fb7185; --c8t: #200508;
+  --c9: #c084fc; --c9t: #100720;
+}
 
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 36px 24px;
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 28px;
-    align-items: start;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--surface2);
-  }
-  .panel-header h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 1.5px;
-    font-size: 1rem;
-    color: var(--text);
-  }
-  .panel-icon {
-    width: 28px; height: 28px;
-    background: rgba(245,166,35,0.15);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
+html { scroll-behavior: smooth; }
 
-  .panel-body { padding: 20px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(245,166,35,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 100%, rgba(91,156,246,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(224,92,42,0.03) 0%, transparent 60%);
+}
 
-  /* FORM */
-  .row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-  label {
-    font-size: 0.7rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  input, select {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.88rem;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    width: 100%;
-  }
-  input:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(245,166,35,0.12);
-  }
-  select option { background: var(--surface); }
+/* ── HEADER ─────────────────────────────────────── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 36px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(13,16,22,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky; top: 0; z-index: 200;
+}
+.logo-wrap {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(245,166,35,0.3);
+}
+.header-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.45rem;
+  letter-spacing: 2.5px;
+  color: var(--text);
+  line-height: 1;
+}
+.header-ver {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--accent);
+  background: rgba(245,166,35,0.1);
+  border: 1px solid rgba(245,166,35,0.25);
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.header-spacer { flex: 1; }
+.header-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-align: right;
+  line-height: 1.6;
+}
 
-  .btn {
-    width: 100%;
-    padding: 11px;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-add {
-    background: rgba(245,166,35,0.12);
-    color: var(--accent);
-    border: 1px solid rgba(245,166,35,0.3);
-    margin-bottom: 16px;
-  }
-  .btn-add:hover { background: rgba(245,166,35,0.2); }
-  .btn-run {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #000;
-    font-weight: 700;
-    margin-top: 8px;
-  }
-  .btn-run:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,166,35,0.3); }
-  .btn-clear {
-    background: transparent;
-    color: var(--red);
-    border: 1px solid rgba(240,96,96,0.3);
-    font-size: 0.75rem;
-    padding: 7px;
-    margin-top: 6px;
-  }
-  .btn-clear:hover { background: rgba(240,96,96,0.08); }
-  .btn-export {
-    background: rgba(91,156,246,0.1);
-    color: #5b9cf6;
-    border: 1px solid rgba(91,156,246,0.3);
-    font-size: 0.78rem;
-    padding: 9px;
-  }
-  .btn-export:hover { background: rgba(91,156,246,0.2); }
-  .btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ── PWA BANNER ─────────────────────────────────── */
+#pwa-banner {
+  display: none;
+  background: linear-gradient(90deg, var(--surface2), var(--surface3));
+  border-bottom: 1px solid rgba(245,166,35,0.25);
+  padding: 9px 20px;
+  text-align: center;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  color: var(--text2);
+}
+#pwa-banner strong { color: var(--accent); }
+#pwa-banner button {
+  background: none; border: none; color: var(--muted);
+  font-size: 1rem; margin-left: 10px; cursor: pointer; vertical-align: middle;
+  padding: 0 4px;
+}
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; margin-bottom: 14px; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  th {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  td { padding: 8px 10px; border-bottom: 1px solid rgba(42,48,64,0.5); }
-  tr:last-child td { border-bottom: none; }
-  .delete-btn {
-    background: none; border: none; color: var(--red);
-    cursor: pointer; font-size: 1rem; padding: 2px 6px;
-    border-radius: 4px; transition: background 0.15s;
-  }
-  .delete-btn:hover { background: rgba(240,96,96,0.12); }
+/* ── LAYOUT ─────────────────────────────────────── */
+.layout {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 920px) {
+  .layout { grid-template-columns: 1fr; }
+  header { padding: 12px 16px; }
+  .header-title { font-size: 1.05rem; }
+  .header-info { display: none; }
+  .layout { padding: 16px 12px 40px; }
+}
 
-  .dia-badge {
-    display: inline-block;
-    background: rgba(62,207,142,0.12);
-    color: var(--green);
-    border: 1px solid rgba(62,207,142,0.25);
-    border-radius: 4px;
-    padding: 1px 7px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-  }
+/* ── CARD ────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+}
+.card-icon {
+  width: 26px; height: 26px;
+  background: rgba(245,166,35,0.12);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1.5px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.card-badge {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.card-body { padding: 20px; }
 
-  /* IMPORT */
-  .import-zone {
-    border: 2px dashed var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    margin-bottom: 16px;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-  .import-zone:hover { border-color: var(--accent); background: rgba(245,166,35,0.04); color: var(--accent); }
+/* ── TABS ────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.tab-btn {
+  padding: 10px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.67rem;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-pane { display: none; padding: 18px 20px; }
+.tab-pane.active { display: block; }
 
-  /* STATS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  .stat-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-  }
-  .stat-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
-  .stat-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.7rem;
-    letter-spacing: 1px;
-    line-height: 1;
-  }
-  .stat-value.good { color: var(--green); }
-  .stat-value.warn { color: var(--accent); }
-  .stat-value.bad { color: var(--red); }
-  .stat-sub { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+/* ── FORM ────────────────────────────────────────── */
+.row { display: flex; gap: 10px; margin-bottom: 10px; }
+.field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.field-label {
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-  /* DIAGRAM */
-  .diagram-section { margin-top: 8px; }
-  .diagram-section h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-  }
-  .bar-row {
-    margin-bottom: 12px;
-    animation: fadeIn 0.4s ease both;
-  }
-  @keyframes fadeIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+input, select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(245,166,35,0.1);
+}
+input::placeholder { color: var(--muted); opacity: 0.6; }
+select option { background: var(--surface2); }
 
-  .bar-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    font-size: 0.75rem;
-  }
-  .bar-label {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--muted);
-  }
-  .bar-pct {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--accent);
-  }
-  .bar-track {
-    height: 28px;
-    background: var(--bg);
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    display: flex;
-    position: relative;
-  }
-  .bar-segment {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    font-weight: 600;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: width 0.5s ease;
-    position: relative;
-    cursor: default;
-  }
-  .bar-segment:hover::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0d0f14;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 0.65rem;
-    white-space: nowrap;
-    z-index: 50;
-    pointer-events: none;
-  }
-  .bar-waste {
-    background: repeating-linear-gradient(
-      45deg,
-      rgba(240,96,96,0.15),
-      rgba(240,96,96,0.15) 4px,
-      rgba(240,96,96,0.05) 4px,
-      rgba(240,96,96,0.05) 8px
-    );
-    border-left: 1px solid rgba(240,96,96,0.2);
-    flex: 1;
-  }
+/* iOS fix: prevent zoom on focus */
+@media (max-width: 600px) {
+  input, select { font-size: 16px !important; }
+}
 
-  .legend {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-top: 14px;
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-  .legend-item { display: flex; align-items: center; gap: 6px; }
-  .legend-dot {
-    width: 12px; height: 12px;
-    border-radius: 3px;
-  }
+/* ── BUTTONS ─────────────────────────────────────── */
+.btn {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.btn-add {
+  background: rgba(245,166,35,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(245,166,35,0.25);
+  margin-bottom: 16px;
+}
+.btn-add:hover { background: rgba(245,166,35,0.18); transform: translateY(-1px); }
 
-  /* COLOR PALETTE for segments */
-  .c0 { background: #3ecf8e; color: #0a2018; }
-  .c1 { background: #f5a623; color: #1a0a00; }
-  .c2 { background: #5b9cf6; color: #0a1020; }
-  .c3 { background: #c084fc; color: #120a20; }
-  .c4 { background: #fb7185; color: #200a0e; }
-  .c5 { background: #34d399; color: #0a1a10; }
-  .c6 { background: #fbbf24; color: #1a1200; }
-  .c7 { background: #60a5fa; color: #0a1020; }
-  .c8 { background: #a78bfa; color: #10081a; }
-  .c9 { background: #f472b6; color: #1a0810; }
+.btn-run {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #0b0d12;
+  font-weight: 900;
+  font-size: 1rem;
+  padding: 13px 14px;
+  box-shadow: 0 4px 16px rgba(245,166,35,0.25);
+  margin-top: 8px;
+  letter-spacing: 3px;
+}
+.btn-run:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.35); }
+.btn-run:active { transform: translateY(0); }
 
-  /* EMPTY */
-  .empty-state {
-    text-align: center;
-    padding: 50px 20px;
-    color: var(--muted);
-  }
-  .empty-state .big { font-size: 2.5rem; margin-bottom: 10px; }
-  .empty-state p { font-size: 0.85rem; }
+.btn-clear {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid rgba(240,96,96,0.25);
+  font-size: 0.72rem;
+  padding: 8px;
+  margin-top: 6px;
+  letter-spacing: 1.5px;
+}
+.btn-clear:hover { background: rgba(240,96,96,0.07); }
 
-  /* PWA / MOBİL */
-  @supports (padding-top: env(safe-area-inset-top)) {
-    header { padding-top: calc(18px + env(safe-area-inset-top)); }
-    footer { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
-  }
-  @media (max-width: 600px) {
-    header { padding: 14px 16px; }
-    header h1 { font-size: 1.1rem; }
-    .container { padding: 16px 12px; gap: 16px; }
-    .stats-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
-    .stat-card { padding: 10px 8px; }
-    .stat-value { font-size: 1.3rem; }
-    .panel-body { padding: 14px; }
-    .tab { padding: 9px 12px; font-size: 0.65rem; }
-    input, select { font-size: 16px !important; } /* iOS zoom engellemek için */
-    .btn { font-size: 0.85rem; padding: 13px; }
-    .btn-run { padding: 15px; font-size: 1rem; }
-    .bar-track { height: 24px; }
-    .bar-segment { font-size: 0.55rem; }
-    footer { padding: 16px; }
-  }
+.btn-export {
+  background: rgba(91,156,246,0.08);
+  color: var(--blue);
+  border: 1px solid rgba(91,156,246,0.25);
+  font-size: 0.72rem;
+  padding: 9px;
+  letter-spacing: 1.5px;
+}
+.btn-export:hover:not(:disabled) { background: rgba(91,156,246,0.16); transform: translateY(-1px); }
+.btn-export:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    .container { grid-template-columns: 1fr; }
-  }
+/* ── TABLE ───────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin-bottom: 14px; max-height: 280px; overflow-y: auto; }
+.table-wrap::-webkit-scrollbar { width: 4px; height: 4px; }
+.table-wrap::-webkit-scrollbar-track { background: transparent; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 14px 0;
-  }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+thead { position: sticky; top: 0; z-index: 1; }
+th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 10px;
+  text-align: left;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(37,44,61,0.5);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
 
-  .fire-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    background: rgba(240,96,96,0.1);
-    color: var(--red);
-    border: 1px solid rgba(240,96,96,0.25);
-    border-radius: 4px;
-    padding: 2px 7px;
-  }
+.dia-badge {
+  display: inline-block;
+  background: rgba(50,213,131,0.1);
+  color: var(--green);
+  border: 1px solid rgba(50,213,131,0.22);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
 
-  .tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-  }
-  .tab {
-    padding: 10px 18px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  .tab-content { display: none; padding: 20px; }
-  .tab-content.active { display: block; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+.delete-btn {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 0.9rem; padding: 3px 7px;
+  border-radius: 5px; transition: background .15s, color .15s;
+  line-height: 1;
+}
+.delete-btn:hover { background: rgba(240,96,96,0.12); color: var(--red); }
+
+/* ── DIVIDER ─────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+/* ── IMPORT ZONE ─────────────────────────────────── */
+.import-zone {
+  border: 2px dashed var(--border2);
+  border-radius: 10px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.import-zone:hover { border-color: var(--accent); background: rgba(245,166,35,0.04); color: var(--accent); }
+.import-zone .icon { font-size: 1.8rem; margin-bottom: 6px; }
+
+/* ── STATS GRID ─────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--stat-color, var(--accent));
+  opacity: 0.6;
+}
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.65rem;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--stat-color, var(--accent));
+}
+.stat-sub { font-size: 0.67rem; color: var(--muted); margin-top: 3px; }
+
+/* ── DIAGRAM ─────────────────────────────────────── */
+.diagram-section { margin-top: 4px; }
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 10px;
+  flex-wrap: wrap;
+}
+.section-heading h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1.5px;
+  color: var(--text2);
+  font-size: 0.88rem;
+  text-transform: uppercase;
+}
+.badge-fire {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  background: rgba(240,96,96,0.1);
+  color: var(--red);
+  border: 1px solid rgba(240,96,96,0.22);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+.badge-model {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  background: rgba(91,156,246,0.1);
+  color: var(--blue);
+  border: 1px solid rgba(91,156,246,0.22);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+/* ── BAR ROW ─────────────────────────────────────── */
+.bar-row {
+  margin-bottom: 14px;
+  animation: slideIn 0.35s ease both;
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateX(-10px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+.bar-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 0.72rem;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bar-label-group { display: flex; align-items: center; gap: 6px; }
+.bar-label {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+.bar-count {
+  background: rgba(245,166,35,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(245,166,35,0.25);
+  border-radius: 4px;
+  padding: 1px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+.bar-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.67rem;
+  color: var(--muted);
+}
+.bar-info .waste-val { color: var(--red); }
+
+.bar-track {
+  height: 30px;
+  background: var(--bg);
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+.bar-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: default;
+  position: relative;
+  flex-shrink: 0;
+  transition: filter .15s;
+}
+.bar-segment:hover { filter: brightness(1.15); z-index: 1; }
+
+/* tooltip */
+.bar-segment::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 4px 9px;
+  border-radius: 5px;
+  font-size: 0.63rem;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.bar-segment:hover::after { opacity: 1; }
+
+.kerf-seg {
+  background: var(--surface3);
+  border-left: 1px solid var(--border2);
+  border-right: 1px solid var(--border2);
+  min-width: 2px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.bar-waste {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(240,96,96,0.16),
+    rgba(240,96,96,0.16) 4px,
+    rgba(240,96,96,0.04) 4px,
+    rgba(240,96,96,0.04) 8px
+  );
+  border-left: 1px solid rgba(240,96,96,0.18);
+  flex: 1;
+  height: 100%;
+  min-width: 2px;
+}
+
+.bar-caption {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.63rem;
+  color: var(--muted);
+  margin-top: 4px;
+  padding-left: 2px;
+  line-height: 1.5;
+}
+
+/* ── SEGMENT COLORS ─────────────────────────────── */
+.c0  { background: var(--c0);  color: var(--c0t);  }
+.c1  { background: var(--c1);  color: var(--c1t);  }
+.c2  { background: var(--c2);  color: var(--c2t);  }
+.c3  { background: var(--c3);  color: var(--c3t);  }
+.c4  { background: var(--c4);  color: var(--c4t);  }
+.c5  { background: var(--c5);  color: var(--c5t);  }
+.c6  { background: var(--c6);  color: var(--c6t);  }
+.c7  { background: var(--c7);  color: var(--c7t);  }
+.c8  { background: var(--c8);  color: var(--c8t);  }
+.c9  { background: var(--c9);  color: var(--c9t);  }
+
+/* ── LEGEND ─────────────────────────────────────── */
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+.legend-waste {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(240,96,96,0.4),
+    rgba(240,96,96,0.4) 3px,
+    rgba(240,96,96,0.1) 3px,
+    rgba(240,96,96,0.1) 6px
+  );
+  border: 1px solid rgba(240,96,96,0.3);
+}
+
+/* ── SUMMARY TABLE ──────────────────────────────── */
+.summary-table-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.summary-table-wrap table { font-size: 0.76rem; }
+.summary-table-wrap th {
+  font-size: 0.58rem;
+  background: var(--surface3);
+  padding: 9px 12px;
+}
+.summary-table-wrap td { padding: 9px 12px; }
+.summary-table-wrap tfoot td {
+  background: rgba(245,166,35,0.06);
+  border-top: 2px solid rgba(245,166,35,0.25);
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+.summary-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin: 24px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── EMPTY STATE ─────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 2.8rem; margin-bottom: 12px; opacity: 0.5; }
+.empty p { font-size: 0.82rem; line-height: 1.7; }
+
+/* ── INFO ROWS ───────────────────────────────────── */
+.info-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+.info-row span { display: flex; align-items: center; gap: 4px; }
+.info-row b { color: var(--text); }
+
+/* ── SCROLLBAR ───────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ── SAFE AREA ───────────────────────────────────── */
+@supports (padding-top: env(safe-area-inset-top)) {
+  header { padding-top: calc(14px + env(safe-area-inset-top)); }
+  footer { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+}
+
+/* ── FOOTER ─────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 18px 36px;
+  text-align: center;
+  background: rgba(13,16,22,0.5);
+}
+footer p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+footer strong { color: var(--accent); font-weight: 600; }
+
+/* ── SETTINGS SECTION ────────────────────────────── */
+.settings-section {
+  padding: 0 20px 20px;
+}
 </style>
+
 </head>
 <body>
 
 <header>
-  <div class="logo-icon">⚙️</div>
-  <h1>ÇUBUK KESİM OPTİMİZATÖRÜ</h1>
-  <span>v1.0</span>
+  <div class="logo-wrap">⚙️</div>
+  <span class="header-title">Çubuk Kesim Optimizatörü</span>
+  <span class="header-ver">v2.0</span>
+  <div class="header-spacer"></div>
+  <div class="header-info">İnş. Müh. İlker Çelik<br>First Fit Decreasing</div>
 </header>
 
-<!-- iPhone PWA Kurulum Banneri -->
-<div id="pwa-banner" style="display:none;background:linear-gradient(90deg,#1e2430,#2a3040);border-bottom:1px solid rgba(245,166,35,0.3);padding:10px 20px;text-align:center">
-  <span style="font-size:0.75rem;color:#dce3ef;font-family:'Barlow',sans-serif">
-    📲 Ana ekrana eklemek için Safari'de
-    <span style="color:#f5a623;font-weight:600"> □↑ Paylaş → Ana Ekrana Ekle</span>
-    seçeneğine dokun
-  </span>
-  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:#6b7a99;font-size:1rem;margin-left:10px;cursor:pointer;vertical-align:middle">✕</button>
+<div id="pwa-banner">
+  📲 Ana ekrana eklemek için Safari'de
+  <strong>□↑ Paylaş → Ana Ekrana Ekle</strong> seçeneğine dokun
+  <button onclick="this.parentElement.style.display='none'">✕</button>
 </div>
 
-<div class="container">
-  <!-- LEFT PANEL: INPUT -->
+<div class="layout">
+
+  <!-- ── LEFT: INPUT ─────────────────────────── -->
+
   <div>
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-icon">📋</div>
-        <h2>Çubuk Listesi Girişi</h2>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <span class="card-title">Çubuk Listesi</span>
+        <span class="card-badge" id="row-count-badge">0 kalem</span>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('manual')">Manuel Giriş</div>
-        <div class="tab" onclick="switchTab('import')">Excel / CSV</div>
+```
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('manual')">Manuel Giriş</button>
+    <button class="tab-btn" onclick="switchTab('import')">Excel / CSV</button>
+  </div>
+
+  <!-- MANUAL TAB -->
+  <div id="tab-manual" class="tab-pane active">
+    <div class="row">
+      <div class="field">
+        <span class="field-label">Çap (mm)</span>
+        <select id="inp-dia">
+          <option>6</option><option>8</option><option>10</option>
+          <option selected>12</option><option>14</option><option>16</option>
+          <option>18</option><option>20</option><option>22</option>
+          <option>25</option><option>28</option><option>32</option>
+        </select>
       </div>
-
-      <div id="tab-manual" class="tab-content active">
-        <div class="row">
-          <div class="field">
-            <label>Çap (mm)</label>
-            <select id="inp-dia">
-              <option>8</option><option>10</option><option selected>12</option>
-              <option>14</option><option>16</option><option>18</option>
-              <option>20</option><option>22</option><option>25</option>
-              <option>28</option><option>32</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Boy (m)</label>
-            <input id="inp-len" type="number" step="0.01" min="0.01" max="12" placeholder="ör: 4.20">
-          </div>
-          <div class="field">
-            <label>Adet</label>
-            <input id="inp-qty" type="number" min="1" placeholder="ör: 10">
-          </div>
-        </div>
-        <button class="btn btn-add" onclick="addRow()">＋ Çubuk Ekle</button>
-
-        <div class="table-wrap" id="table-wrap">
-          <table id="rod-table">
-            <thead>
-              <tr>
-                <th>Çap</th>
-                <th>Boy (m)</th>
-                <th>Adet</th>
-                <th>Toplam m</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="rod-tbody"></tbody>
-          </table>
-        </div>
+      <div class="field">
+        <span class="field-label">Boy (m)</span>
+        <input id="inp-len" type="number" step="0.01" min="0.01" placeholder="ör: 4.20" inputmode="decimal">
       </div>
-
-      <div id="tab-import" class="tab-content">
-        <div class="import-zone" onclick="document.getElementById('csv-file').click()">
-          📂 CSV / Excel dosyası seç veya sürükle<br>
-          <small style="margin-top:4px;display:block;font-size:0.7rem">Sütunlar: çap, boy, adet</small>
-        </div>
-        <input type="file" id="csv-file" accept=".csv,.txt" style="display:none" onchange="importCSV(event)">
-        <p style="font-size:0.72rem;color:var(--muted);margin-bottom:10px">CSV örneği:<br>
-          <code style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--accent)">
-            12,4.20,5<br>16,3.60,8<br>10,2.80,12
-          </code>
-        </p>
+      <div class="field">
+        <span class="field-label">Adet</span>
+        <input id="inp-qty" type="number" min="1" placeholder="ör: 10" inputmode="numeric">
       </div>
+    </div>
+    <button class="btn btn-add" onclick="addRow()">＋ Çubuk Ekle</button>
 
-      <div style="padding: 0 20px 20px">
-        <hr class="divider">
-        <div class="field" style="margin-bottom:12px">
-          <label>Tam Boy Çubuk Uzunluğu (m)</label>
-          <input id="stock-len" type="number" step="0.01" min="1" value="12" placeholder="12">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Çap</th>
+            <th>Boy (m)</th>
+            <th>Adet</th>
+            <th>Toplam m</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rod-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- IMPORT TAB -->
+  <div id="tab-import" class="tab-pane">
+    <div class="import-zone" onclick="document.getElementById('csv-file').click()">
+      <div class="icon">📂</div>
+      CSV / Excel dosyası seç veya sürükle
+      <small style="display:block;margin-top:4px;font-size:0.68rem">Sütunlar: çap, boy, adet (noktalı virgül veya virgülle ayrılmış)</small>
+    </div>
+    <input type="file" id="csv-file" accept=".csv,.txt,.xlsx" style="display:none" onchange="importCSV(event)">
+    <p style="font-size:0.7rem;color:var(--muted);line-height:1.8">
+      CSV formatı:<br>
+      <code style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent)">
+        12;4.20;5<br>16;3.60;8<br>10;2.80;12
+      </code>
+    </p>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="card" style="margin-top:16px">
+  <div class="card-header">
+    <div class="card-icon">⚙️</div>
+    <span class="card-title">Kesim Ayarları</span>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="field">
+        <span class="field-label">Tam Boy Uzunluğu (m)</span>
+        <input id="stock-len" type="number" step="0.01" min="1" value="12" inputmode="decimal">
+      </div>
+      <div class="field">
+        <span class="field-label">Bıçak Payı (mm)</span>
+        <input id="kerf" type="number" step="1" min="0" value="3" inputmode="numeric">
+      </div>
+    </div>
+
+    <button class="btn btn-run" onclick="runOptimization()">▶ Optimizasyonu Çalıştır</button>
+
+    <div class="btn-grid">
+      <button class="btn btn-export" id="btn-pdf" onclick="exportPDF()" disabled>🖨 PDF Çıktısı</button>
+      <button class="btn btn-export" id="btn-excel" onclick="exportExcel()" disabled>📊 Excel'e Aktar</button>
+    </div>
+    <button class="btn btn-clear" onclick="clearAll()">✕ Tümünü Temizle</button>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ── RIGHT: RESULTS ──────────────────────── -->
+
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <span class="card-title">Optimizasyon Sonuçları</span>
+        <span class="card-badge" id="result-badge" style="display:none"></span>
+      </div>
+      <div class="card-body" id="results-body">
+        <div class="empty">
+          <div class="empty-icon">🔩</div>
+          <p>Sol panelden çubuk listesini girin,<br>kesim ayarlarını yapıp optimizasyonu başlatın.</p>
         </div>
-        <div class="field" style="margin-bottom:12px">
-          <label>Bıçak Payı / Kesim Toleransı (mm)</label>
-          <input id="kerf" type="number" step="1" min="0" value="3" placeholder="3">
-        </div>
-        <button class="btn btn-run" onclick="runOptimization()">▶ OPTİMİZASYONU ÇALIŞTIR</button>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-          <button class="btn btn-export" id="btn-pdf" onclick="exportPDF()" disabled>🖨 PDF Çıktısı</button>
-          <button class="btn btn-export" id="btn-excel" onclick="exportExcel()" disabled>📊 Excel'e Aktar</button>
-        </div>
-        <button class="btn btn-clear" onclick="clearAll()">✕ Tümünü Temizle</button>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT PANEL: RESULTS -->
-  <div>
-    <div class="panel" id="results-panel">
-      <div class="panel-header">
-        <div class="panel-icon">📊</div>
-        <h2>Sonuçlar</h2>
-      </div>
-      <div class="panel-body" id="results-body">
-        <div class="empty-state">
-          <div class="big">🔩</div>
-          <p>Sol panelden çubuk listesi girin<br>ve optimizasyonu başlatın.</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
+
+<footer>
+  <p>Bu yazılım <strong>İnşaat Mühendisi İlker Çelik</strong> tarafından geliştirilmiştir &nbsp;|&nbsp; Çubuk Kesim Optimizatörü v2.0</p>
+</footer>
 
 <script>
-// ─── State ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
 let rows = [];
-let colorMap = {};
+let colorMap = {};   // key → 0-9
 let colorIdx = 0;
+let lastDiaResults = null;
+let lastStats = null;
 
-// ─── Tabs ────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════════════
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['manual','import'][i]===name));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b, i) =>
+    b.classList.toggle('active', ['manual','import'][i] === name));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ─── Add row ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  ROWS
+// ═══════════════════════════════════════════════════
 function addRow() {
-  const dia = document.getElementById('inp-dia').value;
+  const dia = parseInt(document.getElementById('inp-dia').value);
   const len = parseFloat(document.getElementById('inp-len').value);
   const qty = parseInt(document.getElementById('inp-qty').value);
-  if (!len || len<=0 || len>parseFloat(document.getElementById('stock-len').value||12)) {
-    alert('Geçerli bir boy girin (tam boy uzunluğundan küçük olmalı).'); return;
+  const stockLen = parseFloat(document.getElementById('stock-len').value) || 12;
+
+  if (!len || len <= 0 || len > stockLen) {
+    flash('Geçerli bir boy girin (0 < boy ≤ tam boy uzunluğu).'); return;
   }
-  if (!qty || qty<=0) { alert('Geçerli bir adet girin.'); return; }
-  rows.push({ dia: parseInt(dia), len, qty, id: Date.now() });
+  if (!qty || qty <= 0 || !Number.isInteger(qty)) {
+    flash('Geçerli bir adet girin.'); return;
+  }
+
+  // Merge with existing same dia+len
+  const existing = rows.find(r => r.dia === dia && Math.abs(r.len - len) < 0.0001);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    rows.push({ dia, len, qty, id: Date.now() + Math.random() });
+  }
+
   renderTable();
   document.getElementById('inp-len').value = '';
   document.getElementById('inp-qty').value = '';
@@ -618,533 +903,661 @@ function removeRow(id) {
 
 function clearAll() {
   rows = [];
+  colorMap = {};
+  colorIdx = 0;
+  lastDiaResults = null;
+  lastStats = null;
   renderTable();
   document.getElementById('btn-pdf').disabled = true;
   document.getElementById('btn-excel').disabled = true;
-  lastDiaResults = null; lastStats = null;
+  document.getElementById('result-badge').style.display = 'none';
   document.getElementById('results-body').innerHTML = `
-    <div class="empty-state"><div class="big">🔩</div><p>Sol panelden çubuk listesi girin<br>ve optimizasyonu başlatın.</p></div>`;
+    <div class="empty">
+      <div class="empty-icon">🔩</div>
+      <p>Sol panelden çubuk listesini girin,<br>kesim ayarlarını yapıp optimizasyonu başlatın.</p>
+    </div>`;
 }
 
 function renderTable() {
   const tbody = document.getElementById('rod-tbody');
+  const badge = document.getElementById('row-count-badge');
+  const totalKalem = rows.length;
+  const totalAdet = rows.reduce((s, r) => s + r.qty, 0);
+  badge.textContent = totalKalem > 0
+    ? `${totalKalem} kalem / ${totalAdet} adet`
+    : '0 kalem';
+
   if (rows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;font-size:0.8rem">Henüz çubuk eklenmedi</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px;font-size:0.78rem">Henüz çubuk eklenmedi</td></tr>`;
     return;
   }
-  tbody.innerHTML = rows.map(r => `
+
+  // Sort by dia then len for display
+  const sorted = [...rows].sort((a, b) => a.dia !== b.dia ? a.dia - b.dia : a.len - b.len);
+
+  tbody.innerHTML = sorted.map(r => `
     <tr>
       <td><span class="dia-badge">Ø${r.dia}</span></td>
-      <td><span style="font-family:'JetBrains Mono',monospace">${r.len.toFixed(2)}</span></td>
-      <td><span style="font-family:'JetBrains Mono',monospace">${r.qty}</span></td>
-      <td><span style="font-family:'JetBrains Mono',monospace;color:var(--accent)">${(r.len*r.qty).toFixed(2)}</span></td>
-      <td><button class="delete-btn" onclick="removeRow(${r.id})">✕</button></td>
-    </tr>
-  `).join('');
+      <td><span class="mono">${r.len.toFixed(2)}</span></td>
+      <td><span class="mono">${r.qty}</span></td>
+      <td><span class="mono" style="color:var(--accent)">${(r.len * r.qty).toFixed(2)}</span></td>
+      <td><button class="delete-btn" onclick="removeRow(${r.id})" title="Sil">✕</button></td>
+    </tr>`).join('');
 }
 
-// ─── CSV Import ───────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  CSV IMPORT
+// ═══════════════════════════════════════════════════
 function importCSV(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const lines = ev.target.result.split('\n').filter(l=>l.trim());
+    const lines = ev.target.result.split('\n').filter(l => l.trim());
+    let added = 0;
     lines.forEach(line => {
-      const parts = line.split(/[,;\t]/).map(s=>s.trim());
+      const parts = line.split(/[,;\t]/).map(s => s.trim().replace(/['"]/g, ''));
       if (parts.length >= 3) {
         const dia = parseInt(parts[0]);
-        const len = parseFloat(parts[1]);
+        const len = parseFloat(parts[1].replace(',', '.'));
         const qty = parseInt(parts[2]);
-        if (dia>0 && len>0 && qty>0) rows.push({dia,len,qty,id:Date.now()+Math.random()});
+        if (dia > 0 && len > 0 && qty > 0 && isFinite(len)) {
+          rows.push({ dia, len, qty, id: Date.now() + Math.random() });
+          added++;
+        }
       }
     });
-    renderTable();
-    switchTab('manual');
+    if (added > 0) {
+      renderTable();
+      switchTab('manual');
+      flash(`${added} satır başarıyla içe aktarıldı.`, 'ok');
+    } else {
+      flash('Geçerli satır bulunamadı. CSV formatını kontrol edin.');
+    }
+    e.target.value = '';
   };
-  reader.readAsText(file);
+  reader.readAsText(file, 'UTF-8');
 }
 
-// ─── Optimization (First Fit Decreasing per diameter) ─────────
+// ═══════════════════════════════════════════════════
+//  FLASH MESSAGE
+// ═══════════════════════════════════════════════════
+function flash(msg, type = 'err') {
+  const existing = document.getElementById('flash-msg');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'flash-msg';
+  const color = type === 'ok' ? 'var(--green)' : 'var(--red)';
+  const bg = type === 'ok' ? 'rgba(50,213,131,0.1)' : 'rgba(240,96,96,0.1)';
+  el.style.cssText = `
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:${bg};color:${color};border:1px solid ${color};
+    padding:10px 20px;border-radius:8px;font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;z-index:9999;white-space:nowrap;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+    animation: fadeUp .2s ease;
+  `;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ═══════════════════════════════════════════════════
+//  OPTIMIZATION  — First Fit Decreasing (corrected)
+// ═══════════════════════════════════════════════════
 function runOptimization() {
-  if (rows.length === 0) { alert('Önce çubuk listesi oluşturun.'); return; }
+  if (rows.length === 0) { flash('Önce çubuk listesi oluşturun.'); return; }
 
   const stockLen = parseFloat(document.getElementById('stock-len').value) || 12;
-  const kerf = (parseFloat(document.getElementById('kerf').value) || 0) / 1000; // mm -> m
+  const kerfMm  = parseFloat(document.getElementById('kerf').value) || 0;
+  const kerf    = kerfMm / 1000; // mm → m
 
-  // Group by diameter
+  // Expand by diameter
   const byDia = {};
   rows.forEach(r => {
     if (!byDia[r.dia]) byDia[r.dia] = [];
-    for (let i=0; i<r.qty; i++) byDia[r.dia].push(r.len);
+    for (let i = 0; i < r.qty; i++) byDia[r.dia].push(r.len);
   });
 
+  // Assign colors per (dia, len) pair
   colorMap = {};
   colorIdx = 0;
+  Object.keys(byDia).sort((a, b) => +a - +b).forEach(dia => {
+    const uniqueLens = [...new Set(byDia[dia].map(l => l.toFixed(4)))];
+    // Sort unique lengths so same length always gets same color within a diameter group
+    uniqueLens.sort((a, b) => +b - +a);
+    uniqueLens.forEach(l => {
+      const key = `${dia}-${l}`;
+      if (colorMap[key] === undefined) colorMap[key] = (colorIdx++) % 10;
+    });
+  });
 
-  let allBars = [];
   let totalRequired = 0;
-  let totalUsed = 0;
-  let totalWaste = 0;
-  let totalBars = 0;
+  let totalUsed     = 0;
+  let totalBars     = 0;
+  const diaResults  = {};
 
-  const diaResults = {};
+  Object.keys(byDia).sort((a, b) => +a - +b).forEach(diaStr => {
+    const dia = parseInt(diaStr);
+    // Sort pieces descending (FFD)
+    const pieces = byDia[diaStr].slice().sort((a, b) => b - a);
 
-  Object.keys(byDia).sort((a,b)=>a-b).forEach(dia => {
-    const pieces = byDia[dia].slice().sort((a,b)=>b-a); // descending
-    const bars = []; // each bar: [{len, label}]
+    /*  Corrected FFD:
+        Each bar tracks its "remaining capacity".
+        Initial capacity = stockLen.
+        When placing the FIRST piece: cost = piece (no leading kerf).
+        When placing subsequent pieces: cost = kerf + piece.
+    */
+    const bars     = []; // each: { pieces: [{len}], remaining: number }
 
-    // First Fit Decreasing
     pieces.forEach(piece => {
       let placed = false;
-      for (let i=0; i<bars.length; i++) {
-        const used = bars[i].reduce((s,p)=>s+p.len+kerf,0);
-        // subtract extra kerf on first cut start
-        const remaining = stockLen - used - (bars[i].length>0 ? 0 : 0);
-        if (remaining - kerf >= piece - 0.0001) {
-          bars[i].push({len: piece, dia: parseInt(dia)});
+
+      for (let i = 0; i < bars.length; i++) {
+        const bar = bars[i];
+        const cost = (bar.pieces.length === 0 ? 0 : kerf) + piece;
+        if (bar.remaining - cost >= -1e-9) {
+          bar.remaining -= cost;
+          bar.pieces.push({ len: piece });
           placed = true;
           break;
         }
       }
-      if (!placed) bars.push([{len: piece, dia: parseInt(dia)}]);
+
+      if (!placed) {
+        // Open a new bar
+        const newBar = { pieces: [], remaining: stockLen };
+        const cost   = piece; // first piece, no leading kerf
+        newBar.remaining -= cost;
+        newBar.pieces.push({ len: piece });
+        bars.push(newBar);
+      }
     });
 
-    // Unique lengths for color coding
-    const uniqueLens = [...new Set(pieces.map(p=>p.toFixed(2)))];
-    uniqueLens.forEach(l => {
-      const key = `${dia}-${l}`;
-      if (colorMap[key] === undefined) colorMap[key] = colorIdx++ % 10;
-    });
-
-    const diaUsed = pieces.reduce((s,p)=>s+p,0);
+    // Compute metrics
+    const diaUsed  = pieces.reduce((s, p) => s + p, 0);
     const diaTotal = bars.length * stockLen;
-    const diaWaste = diaTotal - diaUsed - kerf*pieces.length;
+
+    // Total kerf consumed
+    let diaKerfTotal = 0;
+    bars.forEach(bar => {
+      if (bar.pieces.length > 1) diaKerfTotal += (bar.pieces.length - 1) * kerf;
+    });
+
+    const diaWaste = diaTotal - diaUsed - diaKerfTotal;
 
     totalRequired += diaUsed;
-    totalUsed += diaTotal;
-    totalWaste += diaWaste;
-    totalBars += bars.length;
+    totalUsed     += diaTotal;
+    totalBars     += bars.length;
 
-    diaResults[dia] = { bars, pieces, diaUsed, diaTotal, diaWaste };
-    allBars = allBars.concat(bars.map(b=>({...b, dia})));
+    diaResults[dia] = {
+      bars: bars.map(b => b.pieces), // array of piece arrays
+      pieces,
+      diaUsed,
+      diaTotal,
+      diaWaste,
+      diaKerfTotal
+    };
   });
 
-  const efficiency = (totalRequired / totalUsed * 100).toFixed(1);
-  const wastePct = (totalWaste / totalUsed * 100).toFixed(1);
+  // Total kerf
+  let totalKerf = 0;
+  Object.values(diaResults).forEach(d => totalKerf += d.diaKerfTotal);
 
-  renderResults(diaResults, { stockLen, kerf, efficiency, wastePct, totalBars, totalRequired, totalUsed, totalWaste });
+  const totalWaste     = totalUsed - totalRequired - totalKerf;
+  const efficiency     = (totalRequired / totalUsed * 100).toFixed(1);
+  const wastePct       = (totalWaste   / totalUsed * 100).toFixed(1);
+  const kerfPct        = (totalKerf    / totalUsed * 100).toFixed(1);
+
+  const stats = { stockLen, kerf, kerfMm, efficiency, wastePct, kerfPct,
+                  totalBars, totalRequired, totalUsed, totalWaste, totalKerf };
+
+  lastDiaResults = diaResults;
+  lastStats      = stats;
+
+  document.getElementById('btn-pdf').disabled   = false;
+  document.getElementById('btn-excel').disabled  = false;
+
+  renderResults();
 }
 
-function renderResults(diaResults, stats) {
-  lastDiaResults = diaResults;
-  lastStats = stats;
-  document.getElementById('btn-pdf').disabled = false;
-  document.getElementById('btn-excel').disabled = false;
-  const { stockLen, kerf, efficiency, wastePct, totalBars, totalRequired, totalUsed, totalWaste } = stats;
+// ═══════════════════════════════════════════════════
+//  RENDER RESULTS
+// ═══════════════════════════════════════════════════
+function renderResults() {
+  const { stockLen, kerf, kerfMm, efficiency, wastePct, kerfPct,
+          totalBars, totalRequired, totalUsed, totalWaste, totalKerf } = lastStats;
 
-  const effClass = efficiency >= 92 ? 'good' : efficiency >= 80 ? 'warn' : 'bad';
-  const wasteClass = wastePct <= 8 ? 'good' : wastePct <= 20 ? 'warn' : 'bad';
+  const effColor   = +efficiency >= 92 ? 'var(--green)' : +efficiency >= 78 ? 'var(--accent)' : 'var(--red)';
+  const wasteColor = +wastePct  <=  8  ? 'var(--green)' : +wastePct  <= 20  ? 'var(--accent)' : 'var(--red)';
 
+  // Badge
+  const badge = document.getElementById('result-badge');
+  badge.style.display = '';
+  badge.textContent   = `${efficiency}% verimli`;
+
+  // ── Stats ──
   let html = `
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card" style="--stat-color:${effColor}">
         <div class="stat-label">Verimlilik</div>
-        <div class="stat-value ${effClass}">${efficiency}%</div>
+        <div class="stat-value">${efficiency}%</div>
         <div class="stat-sub">Kullanım oranı</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Fire</div>
-        <div class="stat-value ${wasteClass}">${wastePct}%</div>
+      <div class="stat-card" style="--stat-color:${wasteColor}">
+        <div class="stat-label">Fire Oranı</div>
+        <div class="stat-value">${wastePct}%</div>
         <div class="stat-sub">${totalWaste.toFixed(2)} m fire</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" style="--stat-color:var(--accent)">
         <div class="stat-label">Tam Boy</div>
-        <div class="stat-value warn">${totalBars}</div>
+        <div class="stat-value">${totalBars}</div>
         <div class="stat-sub">adet çubuk</div>
       </div>
     </div>
 
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;font-size:0.75rem;color:var(--muted)">
-      <span>📐 Net ihtiyaç: <b style="color:var(--text)">${totalRequired.toFixed(2)} m</b></span>
-      <span>📦 Satın alım: <b style="color:var(--text)">${totalUsed.toFixed(2)} m</b></span>
-      <span>🔥 Fire: <b style="color:var(--red)">${totalWaste.toFixed(2)} m</b></span>
+    <div class="info-row">
+      <span>📐 Net ihtiyaç: <b>${totalRequired.toFixed(2)} m</b></span>
+      <span>📦 Satın alım: <b>${totalUsed.toFixed(2)} m</b></span>
+      <span style="color:var(--red)">🔥 Fire: <b>${totalWaste.toFixed(2)} m</b></span>
+      ${kerfMm > 0 ? `<span style="color:var(--muted)">✂️ Bıçak: <b>${totalKerf.toFixed(2)} m</b></span>` : ''}
     </div>
     <hr class="divider">
+    <div class="diagram-section">
   `;
 
-  // Ağırlık hesabı: W(kg/m) = 0.00617 × d²
-  function steelWeight(dia, meters) {
-    return 0.00617 * dia * dia * meters;
-  }
-
+  // ── Per-diameter bars ──
+  function steelWeight(dia, m) { return 0.00617 * dia * dia * m; }
   const orderSummary = {};
 
-  Object.keys(diaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars, pieces, diaUsed, diaTotal, diaWaste } = diaResults[dia];
+  Object.keys(lastDiaResults).sort((a, b) => +a - +b).forEach(diaStr => {
+    const dia = parseInt(diaStr);
+    const { bars, diaUsed, diaTotal, diaWaste, diaKerfTotal } = lastDiaResults[diaStr];
 
-    // Aynı kesim modellerini grupla — her bar için imza oluştur
-    const patternMap = {};
-    bars.forEach((bar) => {
-      const sig = bar.map(s => s.len.toFixed(3)).sort().join('|');
-      if (!patternMap[sig]) patternMap[sig] = { bar, count: 0 };
-      patternMap[sig].count++;
-    });
-    const uniquePatterns = Object.values(patternMap);
-
-    // Sipariş özeti için kayıt
-    orderSummary[dia] = {
-      totalBars: bars.length,
-      totalMeters: diaTotal,
-      weight: steelWeight(parseInt(dia), diaTotal)
-    };
-
-    html += `
-      <div class="diagram-section">
-        <h3>
-          Ø${dia}mm &nbsp;—&nbsp; ${bars.length} adet tam boy
-          &nbsp;<span style="color:var(--muted);font-size:0.72rem;font-family:'JetBrains Mono',monospace">(${uniquePatterns.length} farklı model)</span>
-          &nbsp;<span class="fire-badge">🔥 fire: ${((diaWaste/diaTotal)*100).toFixed(1)}%</span>
-        </h3>
-    `;
-
-    uniquePatterns.forEach((pattern, pidx) => {
-      const bar = pattern.bar;
-      const count = pattern.count;
-      const kerfTotal = bar.length * (kerf||0);
-      const usedLen = bar.reduce((s,p)=>s+p.len, 0) + kerfTotal;
-      const wasteLen = stockLen - usedLen;
-      const usedPct = (usedLen / stockLen * 100).toFixed(1);
-
-      let segHtml = '';
-      bar.forEach((seg, si) => {
-        const w = (seg.len / stockLen * 100).toFixed(2);
-        const key = `${dia}-${seg.len.toFixed(2)}`;
-        const ci = colorMap[key] !== undefined ? colorMap[key] : si % 10;
-        const minW = parseFloat(w) > 4;
-        segHtml += `<div class="bar-segment c${ci}" style="width:${w}%" data-tip="Ø${dia}mm — ${seg.len.toFixed(2)}m">${minW ? seg.len.toFixed(2)+'m' : ''}</div>`;
-        if (kerf > 0 && si < bar.length-1) {
-          segHtml += `<div style="width:${(kerf/stockLen*100).toFixed(3)}%;background:#2a3040;min-width:2px"></div>`;
-        }
-      });
-
-      html += `
-        <div class="bar-row" style="animation-delay:${pidx*0.05}s">
-          <div class="bar-meta">
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="bar-label">Model ${pidx+1}</span>
-              ${count > 1
-                ? `<span style="background:rgba(245,166,35,0.15);color:var(--accent);border:1px solid rgba(245,166,35,0.3);border-radius:4px;padding:1px 8px;font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:600;">× ${count} adet</span>`
-                : `<span style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">× 1 adet</span>`}
-            </div>
-            <span class="bar-pct">%${usedPct} dolu — fire: <span style="color:var(--red)">${wasteLen.toFixed(2)}m</span></span>
-          </div>
-          <div class="bar-track">
-            ${segHtml}
-            ${wasteLen > 0.001 ? `<div class="bar-waste" title="Fire: ${wasteLen.toFixed(2)}m"></div>` : ''}
-          </div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.67rem;color:var(--muted);margin-top:4px;padding-left:2px">
-            Kesim: ${bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}${wasteLen>0.001 ? ' + <span style="color:var(--red)">'+wasteLen.toFixed(2)+'m fire</span>' : ''}
-          </div>
-        </div>
-      `;
-    });
-
-    html += `</div><hr class="divider">`;
-  });
-
-  // Legend
-  html += `<div class="legend">`;
-  const seen = new Set();
-  rows.forEach(r => {
-    const key = `${r.dia}-${r.len.toFixed(2)}`;
-    if (!seen.has(key) && colorMap[key] !== undefined) {
-      seen.add(key);
-      html += `<div class="legend-item"><div class="legend-dot c${colorMap[key]}"></div><span>Ø${r.dia}mm — ${r.len.toFixed(2)}m</span></div>`;
-    }
-  });
-  html += `<div class="legend-item"><div class="legend-dot" style="background:repeating-linear-gradient(45deg,rgba(240,96,96,0.3),rgba(240,96,96,0.3) 3px,rgba(240,96,96,0.08) 3px,rgba(240,96,96,0.08) 6px)"></div><span>Fire</span></div>`;
-  html += `</div>`;
-
-  // ── SİPARİŞ ÖZETİ ────────────────────────────────────────────
-  let grandWeight = 0, grandMeters = 0, grandBars = 0;
-  let grandFireMeters = 0, grandFireWeight = 0;
-  let summaryRows = '';
-  Object.keys(orderSummary).sort((a,b)=>a-b).forEach((dia, i) => {
-    const s = orderSummary[dia];
-    const fireMeters = diaResults[dia].diaWaste;
-    const fireWeight = steelWeight(parseInt(dia), fireMeters);
-    grandWeight += s.weight;
-    grandMeters += s.totalMeters;
-    grandBars += s.totalBars;
-    grandFireMeters += fireMeters;
-    grandFireWeight += fireWeight;
-    summaryRows += `
-      <tr style="${i%2===0 ? '' : 'background:rgba(42,48,64,0.2)'}">
-        <td style="padding:10px 14px;border-bottom:1px solid rgba(42,48,64,0.4)"><span class="dia-badge">Ø${dia}mm</span></td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;font-size:0.95rem;font-weight:600;color:var(--accent)">${s.totalBars}</td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--text)">${s.totalMeters.toFixed(2)}</td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--green)">${s.weight.toFixed(1)}</td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--red)">${fireMeters.toFixed(2)}</td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--red)">${fireWeight.toFixed(1)}</td>
-      </tr>`;
-  });
-
-  html += `
-    <div style="margin-top:24px">
-      <div style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1rem;color:var(--accent);margin-bottom:12px">
-        🛒 SİPARİŞ ÖZETİ
-      </div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
-          <thead>
-            <tr style="background:rgba(42,48,64,0.5)">
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:left;border-bottom:1px solid var(--border)">Çap</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Adet</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Toplam (m)</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Ağırlık (kg)</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Fire (m)</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Fire (kg)</th>
-            </tr>
-          </thead>
-          <tbody>${summaryRows}</tbody>
-          <tfoot>
-            <tr style="background:rgba(245,166,35,0.06);border-top:2px solid rgba(245,166,35,0.3)">
-              <td style="padding:12px 10px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--accent)">TOPLAM</td>
-              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent)">${grandBars}</td>
-              <td style="padding:12px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text)">${grandMeters.toFixed(2)} m</td>
-              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${grandWeight.toFixed(1)} kg</td>
-              <td style="padding:12px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--red)">${grandFireMeters.toFixed(2)} m</td>
-              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red)">${grandFireWeight.toFixed(1)} kg</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-      <p style="font-size:0.67rem;color:var(--muted);margin-top:8px">* Ağırlık: W = 0.00617 × d² × L (çelik, 7850 kg/m³)</p>
-    </div>
-  `;
-
-  document.getElementById('results-body').innerHTML = html;
-}
-
-// ─── Export helpers ──────────────────────────────────────────
-let lastDiaResults = null;
-let lastStats = null;
-
-// ─── Init ─────────────────────────────────────────────────────
-renderTable();
-
-// ─── PDF Export ──────────────────────────────────────────────
-function exportPDF() {
-  if (!lastDiaResults) return;
-  const { stockLen, kerf, efficiency, wastePct, totalBars, totalRequired, totalUsed, totalWaste } = lastStats;
-  function sw(dia, m) { return 0.00617 * dia * dia * m; }
-
-  let body = '';
-  let summaryHtml = '';
-  let gw=0, gm=0, gb=0, gfw=0, gfm=0;
-
-  Object.keys(lastDiaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars, diaTotal, diaWaste } = lastDiaResults[dia];
+    // Pattern grouping: signature = sorted piece lengths
     const patternMap = {};
     bars.forEach(bar => {
-      const sig = bar.map(s=>s.len.toFixed(3)).sort().join('|');
+      const sig = bar.map(p => p.len.toFixed(4)).slice().sort().join('|');
       if (!patternMap[sig]) patternMap[sig] = { bar, count: 0 };
       patternMap[sig].count++;
     });
     const patterns = Object.values(patternMap);
 
-    body += `<h3 style="margin:16px 0 6px;font-size:12px;color:#444;border-bottom:2px solid #f5a623;padding-bottom:4px">
-      Ø${dia}mm — ${bars.length} adet tam boy &nbsp;|&nbsp; Fire: ${((diaWaste/diaTotal)*100).toFixed(1)}%
-    </h3>
-    <table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:6px">
-      <thead><tr style="background:#fff8e7">
-        <th style="padding:4px 7px;text-align:left;border:1px solid #ddd">Model</th>
-        <th style="padding:4px 7px;text-align:center;border:1px solid #ddd">Adet</th>
-        <th style="padding:4px 7px;text-align:left;border:1px solid #ddd">Kesim Planı</th>
-        <th style="padding:4px 7px;text-align:right;border:1px solid #ddd">Fire (m)</th>
-      </tr></thead><tbody>`;
-    patterns.forEach((p,i) => {
-      const usedLen = p.bar.reduce((s,x)=>s+x.len,0) + p.bar.length*(kerf||0);
-      const waste = stockLen - usedLen;
-      body += `<tr style="background:${i%2===0?'#fff':'#fafafa'}">
-        <td style="padding:4px 7px;border:1px solid #ddd">Model ${i+1}</td>
-        <td style="padding:4px 7px;text-align:center;border:1px solid #ddd;font-weight:bold;color:#c07000">${p.count}</td>
-        <td style="padding:4px 7px;border:1px solid #ddd;font-family:monospace">${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}</td>
-        <td style="padding:4px 7px;text-align:right;border:1px solid #ddd;color:#c0392b">${waste.toFixed(2)}</td>
+    orderSummary[dia] = {
+      totalBars: bars.length,
+      totalMeters: diaTotal,
+      weight: steelWeight(dia, diaTotal),
+      fireMeters: diaWaste,
+      fireWeight: steelWeight(dia, diaWaste)
+    };
+
+    const diaFirePct = (diaWaste / diaTotal * 100).toFixed(1);
+
+    html += `
+      <div class="section-heading">
+        <h3>Ø${dia}mm — ${bars.length} adet</h3>
+        <span class="badge-model">${patterns.length} model</span>
+        <span class="badge-fire">🔥 ${diaFirePct}% fire</span>
+      </div>
+    `;
+
+    patterns.forEach((pattern, pidx) => {
+      const bar = pattern.bar;
+      const cnt = pattern.count;
+
+      // Exact used length on a single bar
+      const piecesLen  = bar.reduce((s, p) => s + p.len, 0);
+      const kerfOnBar  = bar.length > 1 ? (bar.length - 1) * kerf : 0;
+      const usedLen    = piecesLen + kerfOnBar;
+      const wasteLen   = Math.max(0, stockLen - usedLen);
+      const usedPct    = (usedLen / stockLen * 100).toFixed(1);
+
+      // Segments HTML
+      let segsHtml = '';
+      bar.forEach((seg, si) => {
+        const wPct = (seg.len / stockLen * 100).toFixed(3);
+        const key  = `${dia}-${seg.len.toFixed(4)}`;
+        const ci   = colorMap[key] !== undefined ? colorMap[key] : si % 10;
+        const showLabel = parseFloat(wPct) > 5;
+        const tipText = `Ø${dia}mm — ${seg.len.toFixed(2)} m`;
+
+        segsHtml += `<div class="bar-segment c${ci}" style="width:${wPct}%" data-tip="${tipText}">${showLabel ? seg.len.toFixed(2)+'m' : ''}</div>`;
+
+        // Kerf gap between pieces
+        if (kerf > 0 && si < bar.length - 1) {
+          const kw = (kerf / stockLen * 100).toFixed(4);
+          segsHtml += `<div class="kerf-seg" style="width:${kw}%" title="Bıçak: ${kerfMm}mm"></div>`;
+        }
+      });
+
+      // Caption
+      const captionParts = bar.map(p => p.len.toFixed(2) + 'm').join(' + ');
+      const wasteStr = wasteLen > 0.001
+        ? ` + <span style="color:var(--red)">${wasteLen.toFixed(3)}m fire</span>`
+        : '';
+
+      html += `
+        <div class="bar-row" style="animation-delay:${pidx * 0.04}s">
+          <div class="bar-meta">
+            <div class="bar-label-group">
+              <span class="bar-label">Model ${pidx + 1}</span>
+              <span class="bar-count">× ${cnt} adet</span>
+            </div>
+            <span class="bar-info">%${usedPct} dolu — fire: <span class="waste-val">${wasteLen.toFixed(3)}m</span></span>
+          </div>
+          <div class="bar-track">
+            ${segsHtml}
+            ${wasteLen > 0.001 ? `<div class="bar-waste"></div>` : ''}
+          </div>
+          <div class="bar-caption">${captionParts}${wasteStr}</div>
+        </div>
+      `;
+    });
+
+    html += `<hr class="divider">`;
+  });
+
+  html += `</div>`; // diagram-section
+
+  // ── Legend ──
+  html += `<div class="legend">`;
+  const seen = new Set();
+  rows.forEach(r => {
+    const key = `${r.dia}-${r.len.toFixed(4)}`;
+    if (!seen.has(key) && colorMap[key] !== undefined) {
+      seen.add(key);
+      html += `<div class="legend-item"><div class="legend-dot c${colorMap[key]}"></div><span>Ø${r.dia}mm — ${r.len.toFixed(2)}m</span></div>`;
+    }
+  });
+  html += `<div class="legend-item"><div class="legend-dot legend-waste"></div><span>Fire</span></div>`;
+  html += `</div>`;
+
+  // ── Order Summary ──
+  let grandWeight = 0, grandMeters = 0, grandBars = 0, grandFm = 0, grandFw = 0;
+  let summaryRows = '';
+  Object.keys(orderSummary).sort((a, b) => +a - +b).forEach((dStr, i) => {
+    const s = orderSummary[dStr];
+    grandWeight += s.weight; grandMeters += s.totalMeters; grandBars += s.totalBars;
+    grandFm += s.fireMeters; grandFw += s.fireWeight;
+
+    summaryRows += `
+      <tr style="${i % 2 === 1 ? 'background:rgba(33,39,54,0.4)' : ''}">
+        <td><span class="dia-badge">Ø${dStr}mm</span></td>
+        <td style="text-align:center" class="mono" style="color:var(--accent);font-weight:600">${s.totalBars}</td>
+        <td style="text-align:right" class="mono">${s.totalMeters.toFixed(2)}</td>
+        <td style="text-align:right" class="mono" style="color:var(--green)">${s.weight.toFixed(1)}</td>
+        <td style="text-align:right" class="mono" style="color:var(--red)">${s.fireMeters.toFixed(2)}</td>
+        <td style="text-align:right" class="mono" style="color:var(--red)">${s.fireWeight.toFixed(1)}</td>
+      </tr>`;
+  });
+
+  html += `
+    <div class="summary-heading">🛒 Sipariş Özeti</div>
+    <div class="summary-table-wrap">
+      <table>
+        <thead><tr>
+          <th>Çap</th>
+          <th style="text-align:center">Adet</th>
+          <th style="text-align:right">Toplam (m)</th>
+          <th style="text-align:right">Ağırlık (kg)</th>
+          <th style="text-align:right;color:var(--red)">Fire (m)</th>
+          <th style="text-align:right;color:var(--red)">Fire (kg)</th>
+        </tr></thead>
+        <tbody>${summaryRows}</tbody>
+        <tfoot><tr>
+          <td style="color:var(--accent)">TOPLAM</td>
+          <td style="text-align:center;color:var(--accent)">${grandBars}</td>
+          <td style="text-align:right" class="mono">${grandMeters.toFixed(2)} m</td>
+          <td style="text-align:right;color:var(--green)">${grandWeight.toFixed(1)} kg</td>
+          <td style="text-align:right;color:var(--red)">${grandFm.toFixed(2)} m</td>
+          <td style="text-align:right;color:var(--red)">${grandFw.toFixed(1)} kg</td>
+        </tr></tfoot>
+      </table>
+    </div>
+    <p style="font-size:0.62rem;color:var(--muted);margin-top:8px">
+      * Ağırlık formülü: W = 0.00617 × d² × L (çelik, ρ = 7850 kg/m³)
+    </p>
+  `;
+
+  document.getElementById('results-body').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════
+//  PDF EXPORT
+// ═══════════════════════════════════════════════════
+function exportPDF() {
+  if (!lastDiaResults) return;
+  const { stockLen, kerf, kerfMm, efficiency, wastePct, totalBars,
+          totalRequired, totalUsed, totalWaste } = lastStats;
+  const sw = (d, m) => (0.00617 * d * d * m).toFixed(1);
+  const now = new Date().toLocaleDateString('tr-TR', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+  let bodyHtml = '';
+  let summaryRows = '';
+  let gw = 0, gm = 0, gb = 0, gfw = 0, gfm = 0;
+
+  Object.keys(lastDiaResults).sort((a, b) => +a - +b).forEach(dStr => {
+    const dia = parseInt(dStr);
+    const { bars, diaTotal, diaWaste } = lastDiaResults[dStr];
+
+    const patternMap = {};
+    bars.forEach(bar => {
+      const sig = bar.map(p => p.len.toFixed(4)).sort().join('|');
+      if (!patternMap[sig]) patternMap[sig] = { bar, count: 0 };
+      patternMap[sig].count++;
+    });
+    const patterns = Object.values(patternMap);
+
+    bodyHtml += `
+      <h3 style="margin:18px 0 6px;font-size:12px;border-bottom:2px solid #d4820a;padding-bottom:4px;color:#333">
+        Ø${dia}mm — ${bars.length} adet tam boy &nbsp;|&nbsp; Fire: ${(diaWaste/diaTotal*100).toFixed(1)}%
+      </h3>
+      <table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px">
+        <thead><tr style="background:#fff8e7">
+          <th style="padding:5px 8px;border:1px solid #ddd;text-align:left">Model</th>
+          <th style="padding:5px 8px;border:1px solid #ddd;text-align:center">Adet</th>
+          <th style="padding:5px 8px;border:1px solid #ddd;text-align:left">Kesim Planı</th>
+          <th style="padding:5px 8px;border:1px solid #ddd;text-align:right">Dolu (m)</th>
+          <th style="padding:5px 8px;border:1px solid #ddd;text-align:right;color:#c0392b">Fire (m)</th>
+        </tr></thead>
+        <tbody>`;
+
+    patterns.forEach((p, i) => {
+      const used  = p.bar.reduce((s, x) => s + x.len, 0)
+                  + (p.bar.length > 1 ? (p.bar.length - 1) * kerf : 0);
+      const waste = Math.max(0, stockLen - used);
+      bodyHtml += `<tr style="background:${i%2===0?'#fff':'#fafafa'}">
+        <td style="padding:4px 8px;border:1px solid #ddd;font-family:monospace">Model ${i+1}</td>
+        <td style="padding:4px 8px;border:1px solid #ddd;text-align:center;font-weight:bold;color:#b07700">${p.count}</td>
+        <td style="padding:4px 8px;border:1px solid #ddd;font-family:monospace">${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}</td>
+        <td style="padding:4px 8px;border:1px solid #ddd;text-align:right;font-family:monospace">${used.toFixed(3)}</td>
+        <td style="padding:4px 8px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#c0392b">${waste.toFixed(3)}</td>
       </tr>`;
     });
-    body += `</tbody></table>`;
 
-    const w = sw(parseInt(dia), diaTotal);
-    const fw = sw(parseInt(dia), diaWaste);
-    gw+=w; gm+=diaTotal; gb+=bars.length; gfw+=fw; gfm+=diaWaste;
-    summaryHtml += `<tr>
-      <td style="padding:5px 8px;border:1px solid #ddd">Ø${dia}mm</td>
-      <td style="padding:5px 8px;text-align:center;border:1px solid #ddd;font-weight:bold;color:#c07000">${bars.length}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd">${diaTotal.toFixed(2)}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#27ae60">${w.toFixed(1)}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${diaWaste.toFixed(2)}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${fw.toFixed(1)}</td>
+    bodyHtml += `</tbody></table>`;
+
+    const w = parseFloat(sw(dia, diaTotal));
+    const fw = parseFloat(sw(dia, diaWaste));
+    gw += w; gm += diaTotal; gb += bars.length; gfw += fw; gfm += diaWaste;
+
+    summaryRows += `<tr>
+      <td style="padding:6px 10px;border:1px solid #ddd;font-weight:bold">Ø${dia}mm</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;text-align:center;font-weight:bold;color:#b07700">${bars.length}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;font-family:monospace">${diaTotal.toFixed(2)}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#27ae60">${w.toFixed(1)}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#c0392b">${diaWaste.toFixed(2)}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#c0392b">${fw.toFixed(1)}</td>
     </tr>`;
   });
 
-  const now = new Date().toLocaleDateString('tr-TR');
-
-  // Print-ready içerik mevcut sayfada iframe ile aç
   const existing = document.getElementById('print-frame');
   if (existing) existing.remove();
-
   const iframe = document.createElement('iframe');
   iframe.id = 'print-frame';
-  iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:999999;background:#fff';
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:9999;background:#fff';
   document.body.appendChild(iframe);
 
   const doc = iframe.contentDocument || iframe.contentWindow.document;
   doc.open();
-  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kesim Planı</title>
+  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Kesim Planı — ${now}</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; padding: 24px; color: #222; font-size: 11px; }
-    h1 { font-size: 16px; margin-bottom: 3px; }
-    .meta { color: #777; font-size: 10px; margin-bottom: 14px; }
-    .stats { display: flex; gap: 14px; background: #fffbf0; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; border: 1px solid #ffe0a0; flex-wrap:wrap; }
-    .stat { text-align: center; min-width:70px; }
-    .stat-v { font-size: 16px; font-weight: bold; }
-    .stat-l { font-size: 9px; color: #888; margin-top: 1px; }
-    .good { color: #27ae60; } .warn { color: #e67e22; } .bad { color: #c0392b; }
-    .no-print { display:flex; gap:10px; margin-bottom:16px; }
-    .no-print button { padding:8px 20px; border:none; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold; }
-    .btn-print { background:#f5a623; color:#000; }
-    .btn-close { background:#eee; color:#333; }
-    footer { margin-top: 28px; border-top: 1px solid #ddd; padding-top: 10px; color: #aaa; font-size: 9px; text-align: center; }
-    @media print {
-      .no-print { display: none !important; }
-      body { padding: 12px; }
-    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family: Arial, Helvetica, sans-serif; padding:24px; color:#222; font-size:11px; }
+    h1   { font-size:17px; margin-bottom:4px; }
+    .sub { color:#777; font-size:10px; margin-bottom:16px; }
+    .stats { display:flex; gap:16px; flex-wrap:wrap; background:#fffbf0; padding:10px 14px; border-radius:6px; margin-bottom:20px; border:1px solid #ffe0a0; }
+    .sv { font-size:17px; font-weight:bold; }
+    .sl { font-size:9px; color:#888; margin-top:1px; }
+    .no-print { display:flex; gap:10px; margin-bottom:18px; }
+    .no-print button { padding:9px 22px; border:none; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold; }
+    .bp { background:#f5a623; color:#000; }
+    .bc { background:#eee; color:#333; }
+    footer { margin-top:28px; border-top:1px solid #ddd; padding-top:10px; color:#aaa; font-size:9px; text-align:center; }
+    @media print { .no-print { display:none!important; } }
   </style></head><body>
+
   <div class="no-print">
-    <button class="btn-print" onclick="window.print()">🖨 Yazdır / PDF Kaydet</button>
-    <button class="btn-close" onclick="parent.document.getElementById('print-frame').remove()">✕ Kapat</button>
+    <button class="bp" onclick="window.print()">🖨 Yazdır / PDF Kaydet</button>
+    <button class="bc" onclick="parent.document.getElementById('print-frame').remove()">✕ Kapat</button>
   </div>
   <h1>⚙️ Çubuk Kesim Optimizasyon Raporu</h1>
-  <p class="meta">Tarih: ${now} &nbsp;|&nbsp; Tam boy: ${stockLen}m &nbsp;|&nbsp; Bıçak payı: ${(kerf*1000).toFixed(0)}mm</p>
+  <p class="sub">Tarih: ${now} &nbsp;|&nbsp; Tam boy: ${stockLen} m &nbsp;|&nbsp; Bıçak payı: ${kerfMm} mm &nbsp;|&nbsp; İnş. Müh. İlker Çelik</p>
   <div class="stats">
-    <div class="stat"><div class="stat-v ${parseFloat(efficiency)>=92?'good':parseFloat(efficiency)>=80?'warn':'bad'}">${efficiency}%</div><div class="stat-l">Verimlilik</div></div>
-    <div class="stat"><div class="stat-v ${parseFloat(wastePct)<=8?'good':parseFloat(wastePct)<=20?'warn':'bad'}">${wastePct}%</div><div class="stat-l">Fire oranı</div></div>
-    <div class="stat"><div class="stat-v warn">${totalBars}</div><div class="stat-l">Tam boy çubuk</div></div>
-    <div class="stat"><div class="stat-v">${totalRequired.toFixed(2)}m</div><div class="stat-l">Net ihtiyaç</div></div>
-    <div class="stat"><div class="stat-v bad">${totalWaste.toFixed(2)}m</div><div class="stat-l">Toplam fire</div></div>
+    <div><div class="sv" style="color:${+efficiency>=92?'#27ae60':+efficiency>=78?'#e67e22':'#c0392b'}">${efficiency}%</div><div class="sl">Verimlilik</div></div>
+    <div><div class="sv" style="color:${+wastePct<=8?'#27ae60':+wastePct<=20?'#e67e22':'#c0392b'}">${wastePct}%</div><div class="sl">Fire oranı</div></div>
+    <div><div class="sv" style="color:#e67e22">${totalBars}</div><div class="sl">Tam boy çubuk</div></div>
+    <div><div class="sv">${totalRequired.toFixed(2)} m</div><div class="sl">Net ihtiyaç</div></div>
+    <div><div class="sv" style="color:#c0392b">${totalWaste.toFixed(2)} m</div><div class="sl">Fire</div></div>
   </div>
-  ${body}
-  <h3 style="margin:18px 0 8px;font-size:12px;color:#444;border-bottom:2px solid #f5a623;padding-bottom:4px">🛒 Sipariş Özeti</h3>
+  ${bodyHtml}
+  <h3 style="margin:20px 0 8px;font-size:13px;border-bottom:2px solid #d4820a;padding-bottom:4px;color:#333">🛒 Sipariş Özeti</h3>
   <table style="width:100%;border-collapse:collapse;font-size:10px">
     <thead><tr style="background:#fff8e7">
-      <th style="padding:5px 8px;text-align:left;border:1px solid #ddd">Çap</th>
-      <th style="padding:5px 8px;text-align:center;border:1px solid #ddd">Adet</th>
-      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd">Toplam (m)</th>
-      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd">Ağırlık (kg)</th>
-      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">Fire (m)</th>
-      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">Fire (kg)</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:left">Çap</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:center">Adet</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:right">Toplam (m)</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:right">Ağırlık (kg)</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:right;color:#c0392b">Fire (m)</th>
+      <th style="padding:6px 10px;border:1px solid #ddd;text-align:right;color:#c0392b">Fire (kg)</th>
     </tr></thead>
-    <tbody>${summaryHtml}</tbody>
+    <tbody>${summaryRows}</tbody>
     <tfoot><tr style="background:#fff8e7;font-weight:bold">
-      <td style="padding:6px 8px;border:1px solid #ddd">TOPLAM</td>
-      <td style="padding:6px 8px;text-align:center;border:1px solid #ddd;color:#c07000">${gb}</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd">${gm.toFixed(2)} m</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#27ae60">${gw.toFixed(1)} kg</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${gfm.toFixed(2)} m</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${gfw.toFixed(1)} kg</td>
+      <td style="padding:7px 10px;border:1px solid #ddd">TOPLAM</td>
+      <td style="padding:7px 10px;border:1px solid #ddd;text-align:center;color:#b07700">${gb}</td>
+      <td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-family:monospace">${gm.toFixed(2)} m</td>
+      <td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#27ae60">${gw.toFixed(1)} kg</td>
+      <td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#c0392b">${gfm.toFixed(2)} m</td>
+      <td style="padding:7px 10px;border:1px solid #ddd;text-align:right;font-family:monospace;color:#c0392b">${gfw.toFixed(1)} kg</td>
     </tr></tfoot>
   </table>
-  <footer>Bu yazılım İnşaat Mühendisi İlker Çelik tarafından geliştirilmiştir. &nbsp;|&nbsp; Çubuk Kesim Optimizatörü v1.0</footer>
+  <footer>Bu yazılım İnşaat Mühendisi İlker Çelik tarafından geliştirilmiştir. &nbsp;|&nbsp; Çubuk Kesim Optimizatörü v2.0</footer>
   </body></html>`);
   doc.close();
-
 }
 
-
-// ─── Excel Export ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+//  EXCEL (CSV) EXPORT
+// ═══════════════════════════════════════════════════
 function exportExcel() {
-  if (!lastDiaResults) return;
-  const { stockLen, kerf, efficiency, wastePct, totalBars, totalRequired, totalUsed, totalWaste } = lastStats;
-  function steelWeightLocal(dia, meters) { return 0.00617 * dia * dia * meters; }
+if (!lastDiaResults) return;
+const { stockLen, kerf, kerfMm, efficiency, wastePct, totalBars,
+totalRequired, totalUsed, totalWaste, totalKerf } = lastStats;
+const sw = (d, m) => 0.00617 * d * d * m;
 
-  let csv = '\uFEFF'; // BOM for Turkish chars
-  csv += 'ÇUBUK KESİM OPTİMİZASYON RAPORU\n';
-  csv += `Tam boy uzunluğu;${stockLen} m\n`;
-  csv += `Bıçak payı;${(kerf*1000).toFixed(0)} mm\n`;
-  csv += `Verimlilik;${efficiency}%\n`;
-  csv += `Fire oranı;${wastePct}%\n\n`;
+const SEP = ‘;’;
+let csv = ‘\uFEFF’; // UTF-8 BOM for Turkish characters in Excel
 
-  csv += 'KESİM MODELLERİ\n';
-  csv += 'Çap (mm);Model No;Adet;Kesim Planı;Dolu (m);Fire (m)\n';
+csv += `ÇUBUK KESİM OPTİMİZASYON RAPORU\n`;
+csv += `Oluşturma tarihi${SEP}${new Date().toLocaleDateString('tr-TR')}\n`;
+csv += `Tam boy uzunluğu${SEP}${stockLen} m\n`;
+csv += `Bıçak payı${SEP}${kerfMm} mm\n`;
+csv += `Verimlilik${SEP}${efficiency}%\n`;
+csv += `Fire oranı${SEP}${wastePct}%\n`;
+csv += `Net ihtiyaç${SEP}${totalRequired.toFixed(2)} m\n`;
+csv += `Toplam satın alım${SEP}${totalUsed.toFixed(2)} m\n`;
+csv += `Toplam fire${SEP}${totalWaste.toFixed(2)} m\n`;
+if (kerfMm > 0) csv += `Toplam bıçak payı${SEP}${totalKerf.toFixed(2)} m\n`;
+csv += `\n`;
 
-  Object.keys(lastDiaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars } = lastDiaResults[dia];
-    const patternMap = {};
-    bars.forEach(bar => {
-      const sig = bar.map(s=>s.len.toFixed(3)).sort().join('|');
-      if (!patternMap[sig]) patternMap[sig] = { bar, count: 0 };
-      patternMap[sig].count++;
-    });
-    Object.values(patternMap).forEach((p, i) => {
-      const usedLen = p.bar.reduce((s,x)=>s+x.len,0) + p.bar.length*(kerf||0);
-      const waste = stockLen - usedLen;
-      csv += `${dia};Model ${i+1};${p.count};"${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}";${usedLen.toFixed(3)};${waste.toFixed(3)}\n`;
-    });
-  });
+csv += `KESİM MODELLERİ\n`;
+csv += `Çap (mm)${SEP}Model No${SEP}Adet${SEP}Kesim Planı${SEP}Dolu (m)${SEP}Fire (m)${SEP}Doluluk %\n`;
 
-  csv += '\nSİPARİŞ ÖZETİ\n';
-  csv += 'Çap (mm);Adet (12m);Toplam (m);Ağırlık (kg)\n';
-  let gw=0, gm=0, gb=0;
-  Object.keys(lastDiaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars, diaTotal } = lastDiaResults[dia];
-    const w = steelWeightLocal(parseInt(dia), diaTotal);
-    gw+=w; gm+=diaTotal; gb+=bars.length;
-    csv += `${dia};${bars.length};${diaTotal.toFixed(2)};${w.toFixed(2)}\n`;
-  });
-  csv += `TOPLAM;${gb};${gm.toFixed(2)};${gw.toFixed(2)}\n`;
-  csv += '\nBu yazılım İnşaat Mühendisi İlker Çelik tarafından geliştirilmiştir.\n';
+Object.keys(lastDiaResults).sort((a, b) => +a - +b).forEach(dStr => {
+const dia = parseInt(dStr);
+const { bars } = lastDiaResults[dStr];
+const patternMap = {};
+bars.forEach(bar => {
+const sig = bar.map(p => p.len.toFixed(4)).sort().join(’|’);
+if (!patternMap[sig]) patternMap[sig] = { bar, count: 0 };
+patternMap[sig].count++;
+});
+Object.values(patternMap).forEach((p, i) => {
+const used  = p.bar.reduce((s, x) => s + x.len, 0)
++ (p.bar.length > 1 ? (p.bar.length - 1) * kerf : 0);
+const waste = Math.max(0, stockLen - used);
+const pct   = (used / stockLen * 100).toFixed(1);
+csv += `${dia}${SEP}Model ${i+1}${SEP}${p.count}${SEP}"${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}"${SEP}${used.toFixed(3)}${SEP}${waste.toFixed(3)}${SEP}${pct}%\n`;
+});
+});
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.style.display = 'none';
-  const now = new Date();
-  a.download = `kesim-plani-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+csv += `\nSİPARİŞ ÖZETİ\n`;
+csv += `Çap (mm)${SEP}Adet${SEP}Toplam (m)${SEP}Ağırlık (kg)${SEP}Fire (m)${SEP}Fire (kg)\n`;
+
+let gw = 0, gm = 0, gb = 0, gfm = 0, gfw = 0;
+Object.keys(lastDiaResults).sort((a, b) => +a - +b).forEach(dStr => {
+const dia = parseInt(dStr);
+const { bars, diaTotal, diaWaste } = lastDiaResults[dStr];
+const w = sw(dia, diaTotal), fw = sw(dia, diaWaste);
+gw += w; gm += diaTotal; gb += bars.length; gfm += diaWaste; gfw += fw;
+csv += `${dia}${SEP}${bars.length}${SEP}${diaTotal.toFixed(2)}${SEP}${w.toFixed(2)}${SEP}${diaWaste.toFixed(2)}${SEP}${fw.toFixed(2)}\n`;
+});
+csv += `TOPLAM${SEP}${gb}${SEP}${gm.toFixed(2)}${SEP}${gw.toFixed(2)}${SEP}${gfm.toFixed(2)}${SEP}${gfw.toFixed(2)}\n`;
+csv += `\n* Ağırlık: W = 0.00617 × d² × L (çelik, 7850 kg/m³)\n`;
+csv += `Bu yazılım İnşaat Mühendisi İlker Çelik tarafından geliştirilmiştir.\n`;
+
+const blob = new Blob([csv], { type: ‘text/csv;charset=utf-8;’ });
+const url  = URL.createObjectURL(blob);
+const a    = document.createElement(‘a’);
+a.href = url; a.style.display = ‘none’;
+const d = new Date();
+a.download = `kesim-plani-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.csv`;
+document.body.appendChild(a); a.click(); document.body.removeChild(a);
+setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// Enter key on inputs
-document.getElementById('inp-qty').addEventListener('keydown', e => { if(e.key==='Enter') addRow(); });
-document.getElementById('inp-len').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-qty').focus(); });
-</script>
-<script>
-// iPhone Safari'de ana ekranda değilse banner göster
+// ═══════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════
+document.getElementById(‘inp-len’).addEventListener(‘keydown’, e => {
+if (e.key === ‘Enter’) document.getElementById(‘inp-qty’).focus();
+});
+document.getElementById(‘inp-qty’).addEventListener(‘keydown’, e => {
+if (e.key === ‘Enter’) addRow();
+});
+
+// ═══════════════════════════════════════════════════
+//  PWA BANNER
+// ═══════════════════════════════════════════════════
 (function() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const dismissed = sessionStorage.getItem('pwa-dismissed');
-  if (isIOS && !isStandalone && !dismissed) {
-    document.getElementById('pwa-banner').style.display = 'block';
-    document.getElementById('pwa-banner').querySelector('button').addEventListener('click', () => {
-      sessionStorage.setItem('pwa-dismissed', '1');
-    });
-  }
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone === true;
+const dismissed = sessionStorage.getItem(‘pwa-dismissed’);
+if (isIOS && !isStandalone && !dismissed) {
+const banner = document.getElementById(‘pwa-banner’);
+banner.style.display = ‘block’;
+banner.querySelector(‘button’).addEventListener(‘click’, () => {
+sessionStorage.setItem(‘pwa-dismissed’, ‘1’);
+});
+}
 })();
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+renderTable();
 </script>
 
-<footer style="border-top:1px solid #2a3040;padding:20px 40px;text-align:center;background:rgba(22,26,34,0.6);margin-top:40px">
-  <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#6b7a99;letter-spacing:0.5px">
-    Bu yazılım <span style="color:#f5a623;font-weight:600">İnşaat Mühendisi İlker Çelik</span> tarafından geliştirilmiştir.
-    <span style="margin-left:12px;opacity:0.4">|</span>
-    <span style="margin-left:12px">Çubuk Kesim Optimizatörü v1.0</span>
-  </p>
-</footer>
 </body>
-</html
+</html>
