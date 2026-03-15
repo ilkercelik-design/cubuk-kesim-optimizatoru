@@ -2,8 +2,37 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Çubuk Kesim Optimizasyonu</title>
+
+<!-- PWA Meta -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kesim Opt.">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0f14">
+<meta name="description" content="Çelik çubuk kesim optimizasyonu — İnşaat Mühendisi İlker Çelik">
+
+<!-- PWA Icons (inline SVG data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d0f14'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230d0f14'/%3E%3Crect x='60' y='80' width='60' height='352' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='80' width='200' height='55' rx='12' fill='%23f5a623'/%3E%3Crect x='60' y='228' width='160' height='55' rx='12' fill='%23e05c2a'/%3E%3Crect x='220' y='130' width='232' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='200' width='180' height='40' rx='8' fill='%233ecf8e'/%3E%3Crect x='220' y='270' width='210' height='40' rx='8' fill='%235b9cf6'/%3E%3Crect x='220' y='340' width='150' height='40' rx='8' fill='%235b9cf6'/%3E%3C/svg%3E">
+
+<!-- Service Worker & Manifest (inline) -->
+<script>
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE = 'kesim-opt-v1';
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    });
+  `;
+  const blob = new Blob([swCode], {type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -374,6 +403,28 @@
   .empty-state .big { font-size: 2.5rem; margin-bottom: 10px; }
   .empty-state p { font-size: 0.85rem; }
 
+  /* PWA / MOBİL */
+  @supports (padding-top: env(safe-area-inset-top)) {
+    header { padding-top: calc(18px + env(safe-area-inset-top)); }
+    footer { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+  }
+  @media (max-width: 600px) {
+    header { padding: 14px 16px; }
+    header h1 { font-size: 1.1rem; }
+    .container { padding: 16px 12px; gap: 16px; }
+    .stats-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .stat-card { padding: 10px 8px; }
+    .stat-value { font-size: 1.3rem; }
+    .panel-body { padding: 14px; }
+    .tab { padding: 9px 12px; font-size: 0.65rem; }
+    input, select { font-size: 16px !important; } /* iOS zoom engellemek için */
+    .btn { font-size: 0.85rem; padding: 13px; }
+    .btn-run { padding: 15px; font-size: 1rem; }
+    .bar-track { height: 24px; }
+    .bar-segment { font-size: 0.55rem; }
+    footer { padding: 16px; }
+  }
+
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -433,6 +484,16 @@
   <h1>ÇUBUK KESİM OPTİMİZATÖRÜ</h1>
   <span>v1.0</span>
 </header>
+
+<!-- iPhone PWA Kurulum Banneri -->
+<div id="pwa-banner" style="display:none;background:linear-gradient(90deg,#1e2430,#2a3040);border-bottom:1px solid rgba(245,166,35,0.3);padding:10px 20px;text-align:center">
+  <span style="font-size:0.75rem;color:#dce3ef;font-family:'Barlow',sans-serif">
+    📲 Ana ekrana eklemek için Safari'de
+    <span style="color:#f5a623;font-weight:600"> □↑ Paylaş → Ana Ekrana Ekle</span>
+    seçeneğine dokun
+  </span>
+  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:#6b7a99;font-size:1rem;margin-left:10px;cursor:pointer;vertical-align:middle">✕</button>
+</div>
 
 <div class="container">
   <!-- LEFT PANEL: INPUT -->
@@ -822,18 +883,25 @@ function renderResults(diaResults, stats) {
 
   // ── SİPARİŞ ÖZETİ ────────────────────────────────────────────
   let grandWeight = 0, grandMeters = 0, grandBars = 0;
+  let grandFireMeters = 0, grandFireWeight = 0;
   let summaryRows = '';
   Object.keys(orderSummary).sort((a,b)=>a-b).forEach((dia, i) => {
     const s = orderSummary[dia];
+    const fireMeters = diaResults[dia].diaWaste;
+    const fireWeight = steelWeight(parseInt(dia), fireMeters);
     grandWeight += s.weight;
     grandMeters += s.totalMeters;
     grandBars += s.totalBars;
+    grandFireMeters += fireMeters;
+    grandFireWeight += fireWeight;
     summaryRows += `
       <tr style="${i%2===0 ? '' : 'background:rgba(42,48,64,0.2)'}">
         <td style="padding:10px 14px;border-bottom:1px solid rgba(42,48,64,0.4)"><span class="dia-badge">Ø${dia}mm</span></td>
         <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;font-size:0.95rem;font-weight:600;color:var(--accent)">${s.totalBars}</td>
-        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--text)">${s.totalMeters.toFixed(1)}</td>
+        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--text)">${s.totalMeters.toFixed(2)}</td>
         <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--green)">${s.weight.toFixed(1)}</td>
+        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--red)">${fireMeters.toFixed(2)}</td>
+        <td style="padding:10px 14px;text-align:center;border-bottom:1px solid rgba(42,48,64,0.4);font-family:'JetBrains Mono',monospace;color:var(--red)">${fireWeight.toFixed(1)}</td>
       </tr>`;
   });
 
@@ -843,22 +911,26 @@ function renderResults(diaResults, stats) {
         🛒 SİPARİŞ ÖZETİ
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
-        <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+        <table style="width:100%;border-collapse:collapse;font-size:0.78rem">
           <thead>
             <tr style="background:rgba(42,48,64,0.5)">
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)">Çap</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:center;border-bottom:1px solid var(--border)">Adet (12m)</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:center;border-bottom:1px solid var(--border)">Toplam (m)</th>
-              <th style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 14px;text-align:center;border-bottom:1px solid var(--border)">Ağırlık (kg)</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:left;border-bottom:1px solid var(--border)">Çap</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Adet</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Toplam (m)</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Ağırlık (kg)</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Fire (m)</th>
+              <th style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--red);text-transform:uppercase;letter-spacing:1px;padding:10px 10px;text-align:center;border-bottom:1px solid var(--border)">Fire (kg)</th>
             </tr>
           </thead>
           <tbody>${summaryRows}</tbody>
           <tfoot>
             <tr style="background:rgba(245,166,35,0.06);border-top:2px solid rgba(245,166,35,0.3)">
-              <td style="padding:12px 14px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--accent)">TOPLAM</td>
-              <td style="padding:12px 14px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent)">${grandBars}</td>
-              <td style="padding:12px 14px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text)">${grandMeters.toFixed(1)} m</td>
-              <td style="padding:12px 14px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${grandWeight.toFixed(1)} kg</td>
+              <td style="padding:12px 10px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--accent)">TOPLAM</td>
+              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent)">${grandBars}</td>
+              <td style="padding:12px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text)">${grandMeters.toFixed(2)} m</td>
+              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--green)">${grandWeight.toFixed(1)} kg</td>
+              <td style="padding:12px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--red)">${grandFireMeters.toFixed(2)} m</td>
+              <td style="padding:12px 10px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red)">${grandFireWeight.toFixed(1)} kg</td>
             </tr>
           </tfoot>
         </table>
@@ -881,12 +953,14 @@ renderTable();
 function exportPDF() {
   if (!lastDiaResults) return;
   const { stockLen, kerf, efficiency, wastePct, totalBars, totalRequired, totalUsed, totalWaste } = lastStats;
-
-  function steelWeightLocal(dia, meters) { return 0.00617 * dia * dia * meters; }
+  function sw(dia, m) { return 0.00617 * dia * dia * m; }
 
   let body = '';
+  let summaryHtml = '';
+  let gw=0, gm=0, gb=0, gfw=0, gfm=0;
+
   Object.keys(lastDiaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars, diaUsed, diaTotal, diaWaste } = lastDiaResults[dia];
+    const { bars, diaTotal, diaWaste } = lastDiaResults[dia];
     const patternMap = {};
     bars.forEach(bar => {
       const sig = bar.map(s=>s.len.toFixed(3)).sort().join('|');
@@ -894,105 +968,116 @@ function exportPDF() {
       patternMap[sig].count++;
     });
     const patterns = Object.values(patternMap);
-    body += `<h3 style="margin:18px 0 8px;font-size:13px;color:#555;border-bottom:1px solid #ddd;padding-bottom:4px">
+
+    body += `<h3 style="margin:16px 0 6px;font-size:12px;color:#444;border-bottom:2px solid #f5a623;padding-bottom:4px">
       Ø${dia}mm — ${bars.length} adet tam boy &nbsp;|&nbsp; Fire: ${((diaWaste/diaTotal)*100).toFixed(1)}%
-    </h3>`;
-    body += `<table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px">
-      <thead><tr style="background:#f5f5f5">
-        <th style="padding:5px 8px;text-align:left;border:1px solid #ddd">Model</th>
-        <th style="padding:5px 8px;text-align:center;border:1px solid #ddd">Adet</th>
-        <th style="padding:5px 8px;text-align:left;border:1px solid #ddd">Kesim Planı</th>
-        <th style="padding:5px 8px;text-align:right;border:1px solid #ddd">Fire (m)</th>
+    </h3>
+    <table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:6px">
+      <thead><tr style="background:#fff8e7">
+        <th style="padding:4px 7px;text-align:left;border:1px solid #ddd">Model</th>
+        <th style="padding:4px 7px;text-align:center;border:1px solid #ddd">Adet</th>
+        <th style="padding:4px 7px;text-align:left;border:1px solid #ddd">Kesim Planı</th>
+        <th style="padding:4px 7px;text-align:right;border:1px solid #ddd">Fire (m)</th>
       </tr></thead><tbody>`;
     patterns.forEach((p,i) => {
       const usedLen = p.bar.reduce((s,x)=>s+x.len,0) + p.bar.length*(kerf||0);
       const waste = stockLen - usedLen;
       body += `<tr style="background:${i%2===0?'#fff':'#fafafa'}">
-        <td style="padding:5px 8px;border:1px solid #ddd">Model ${i+1}</td>
-        <td style="padding:5px 8px;text-align:center;border:1px solid #ddd;font-weight:bold">${p.count}</td>
-        <td style="padding:5px 8px;border:1px solid #ddd">${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}</td>
-        <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${waste.toFixed(2)}</td>
+        <td style="padding:4px 7px;border:1px solid #ddd">Model ${i+1}</td>
+        <td style="padding:4px 7px;text-align:center;border:1px solid #ddd;font-weight:bold;color:#c07000">${p.count}</td>
+        <td style="padding:4px 7px;border:1px solid #ddd;font-family:monospace">${p.bar.map(s=>s.len.toFixed(2)+'m').join(' + ')}</td>
+        <td style="padding:4px 7px;text-align:right;border:1px solid #ddd;color:#c0392b">${waste.toFixed(2)}</td>
       </tr>`;
     });
     body += `</tbody></table>`;
-  });
 
-  // Order summary
-  let summaryHtml = '';
-  let gw=0, gm=0, gb=0;
-  Object.keys(lastDiaResults).sort((a,b)=>a-b).forEach(dia => {
-    const { bars, diaTotal } = lastDiaResults[dia];
-    const w = steelWeightLocal(parseInt(dia), diaTotal);
-    gw+=w; gm+=diaTotal; gb+=bars.length;
-    summaryHtml += `<tr><td style="padding:5px 8px;border:1px solid #ddd">Ø${dia}mm</td>
-      <td style="padding:5px 8px;text-align:center;border:1px solid #ddd;font-weight:bold">${bars.length}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd">${diaTotal.toFixed(1)}</td>
-      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd">${w.toFixed(1)}</td></tr>`;
+    const w = sw(parseInt(dia), diaTotal);
+    const fw = sw(parseInt(dia), diaWaste);
+    gw+=w; gm+=diaTotal; gb+=bars.length; gfw+=fw; gfm+=diaWaste;
+    summaryHtml += `<tr>
+      <td style="padding:5px 8px;border:1px solid #ddd">Ø${dia}mm</td>
+      <td style="padding:5px 8px;text-align:center;border:1px solid #ddd;font-weight:bold;color:#c07000">${bars.length}</td>
+      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd">${diaTotal.toFixed(2)}</td>
+      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#27ae60">${w.toFixed(1)}</td>
+      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${diaWaste.toFixed(2)}</td>
+      <td style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${fw.toFixed(1)}</td>
+    </tr>`;
   });
 
   const now = new Date().toLocaleDateString('tr-TR');
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-  <title>Kesim Planı</title>
+
+  // Print-ready içerik mevcut sayfada iframe ile aç
+  const existing = document.getElementById('print-frame');
+  if (existing) existing.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'print-frame';
+  iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:999999;background:#fff';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kesim Planı</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 32px; color: #222; font-size: 12px; }
-    h1 { font-size: 18px; margin-bottom: 4px; }
-    .meta { color: #777; font-size: 11px; margin-bottom: 20px; }
-    .stats { display: flex; gap: 24px; background: #f9f9f9; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e0e0e0; }
-    .stat { text-align: center; }
-    .stat-v { font-size: 18px; font-weight: bold; }
-    .stat-l { font-size: 10px; color: #888; margin-top: 2px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; padding: 24px; color: #222; font-size: 11px; }
+    h1 { font-size: 16px; margin-bottom: 3px; }
+    .meta { color: #777; font-size: 10px; margin-bottom: 14px; }
+    .stats { display: flex; gap: 14px; background: #fffbf0; padding: 10px 14px; border-radius: 6px; margin-bottom: 18px; border: 1px solid #ffe0a0; flex-wrap:wrap; }
+    .stat { text-align: center; min-width:70px; }
+    .stat-v { font-size: 16px; font-weight: bold; }
+    .stat-l { font-size: 9px; color: #888; margin-top: 1px; }
     .good { color: #27ae60; } .warn { color: #e67e22; } .bad { color: #c0392b; }
-    footer { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 12px; color: #aaa; font-size: 10px; text-align: center; }
+    .no-print { display:flex; gap:10px; margin-bottom:16px; }
+    .no-print button { padding:8px 20px; border:none; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold; }
+    .btn-print { background:#f5a623; color:#000; }
+    .btn-close { background:#eee; color:#333; }
+    footer { margin-top: 28px; border-top: 1px solid #ddd; padding-top: 10px; color: #aaa; font-size: 9px; text-align: center; }
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 12px; }
+    }
   </style></head><body>
+  <div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨 Yazdır / PDF Kaydet</button>
+    <button class="btn-close" onclick="parent.document.getElementById('print-frame').remove()">✕ Kapat</button>
+  </div>
   <h1>⚙️ Çubuk Kesim Optimizasyon Raporu</h1>
-  <div class="meta">Tarih: ${now} &nbsp;|&nbsp; Tam boy: ${stockLen}m &nbsp;|&nbsp; Bıçak payı: ${(kerf*1000).toFixed(0)}mm</div>
+  <p class="meta">Tarih: ${now} &nbsp;|&nbsp; Tam boy: ${stockLen}m &nbsp;|&nbsp; Bıçak payı: ${(kerf*1000).toFixed(0)}mm</p>
   <div class="stats">
-    <div class="stat"><div class="stat-v ${efficiency>=92?'good':efficiency>=80?'warn':'bad'}">${efficiency}%</div><div class="stat-l">Verimlilik</div></div>
-    <div class="stat"><div class="stat-v ${wastePct<=8?'good':wastePct<=20?'warn':'bad'}">${wastePct}%</div><div class="stat-l">Fire oranı</div></div>
+    <div class="stat"><div class="stat-v ${parseFloat(efficiency)>=92?'good':parseFloat(efficiency)>=80?'warn':'bad'}">${efficiency}%</div><div class="stat-l">Verimlilik</div></div>
+    <div class="stat"><div class="stat-v ${parseFloat(wastePct)<=8?'good':parseFloat(wastePct)<=20?'warn':'bad'}">${wastePct}%</div><div class="stat-l">Fire oranı</div></div>
     <div class="stat"><div class="stat-v warn">${totalBars}</div><div class="stat-l">Tam boy çubuk</div></div>
-    <div class="stat"><div class="stat-v">${totalRequired.toFixed(2)} m</div><div class="stat-l">Net ihtiyaç</div></div>
-    <div class="stat"><div class="stat-v">${totalWaste.toFixed(2)} m</div><div class="stat-l">Toplam fire</div></div>
+    <div class="stat"><div class="stat-v">${totalRequired.toFixed(2)}m</div><div class="stat-l">Net ihtiyaç</div></div>
+    <div class="stat"><div class="stat-v bad">${totalWaste.toFixed(2)}m</div><div class="stat-l">Toplam fire</div></div>
   </div>
   ${body}
-  <h3 style="margin:20px 0 8px;font-size:13px;color:#555;border-bottom:1px solid #ddd;padding-bottom:4px">🛒 Sipariş Özeti</h3>
-  <table style="width:100%;border-collapse:collapse;font-size:11px">
-    <thead><tr style="background:#f5f5f5">
+  <h3 style="margin:18px 0 8px;font-size:12px;color:#444;border-bottom:2px solid #f5a623;padding-bottom:4px">🛒 Sipariş Özeti</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:10px">
+    <thead><tr style="background:#fff8e7">
       <th style="padding:5px 8px;text-align:left;border:1px solid #ddd">Çap</th>
-      <th style="padding:5px 8px;text-align:center;border:1px solid #ddd">Adet (12m)</th>
+      <th style="padding:5px 8px;text-align:center;border:1px solid #ddd">Adet</th>
       <th style="padding:5px 8px;text-align:right;border:1px solid #ddd">Toplam (m)</th>
       <th style="padding:5px 8px;text-align:right;border:1px solid #ddd">Ağırlık (kg)</th>
+      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">Fire (m)</th>
+      <th style="padding:5px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">Fire (kg)</th>
     </tr></thead>
     <tbody>${summaryHtml}</tbody>
     <tfoot><tr style="background:#fff8e7;font-weight:bold">
       <td style="padding:6px 8px;border:1px solid #ddd">TOPLAM</td>
-      <td style="padding:6px 8px;text-align:center;border:1px solid #ddd">${gb}</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd">${gm.toFixed(1)} m</td>
-      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd">${gw.toFixed(1)} kg</td>
+      <td style="padding:6px 8px;text-align:center;border:1px solid #ddd;color:#c07000">${gb}</td>
+      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd">${gm.toFixed(2)} m</td>
+      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#27ae60">${gw.toFixed(1)} kg</td>
+      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${gfm.toFixed(2)} m</td>
+      <td style="padding:6px 8px;text-align:right;border:1px solid #ddd;color:#c0392b">${gfw.toFixed(1)} kg</td>
     </tr></tfoot>
   </table>
   <footer>Bu yazılım İnşaat Mühendisi İlker Çelik tarafından geliştirilmiştir. &nbsp;|&nbsp; Çubuk Kesim Optimizatörü v1.0</footer>
-  </body></html>`;
+  </body></html>`);
+  doc.close();
 
-  // Safari dahil tüm tarayıcılarda çalışan yöntem:
-  // HTML dosyası olarak indir, tarayıcıda aç, Ctrl+P ile PDF kaydet
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'kesim-plani-' + new Date().toISOString().slice(0,10) + '.html';
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-
-  // Kullanıcıya kısa bilgi ver
-  const info = document.createElement('div');
-  info.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e2430;border:1px solid #f5a623;color:#f5a623;padding:12px 20px;border-radius:8px;font-family:JetBrains Mono,monospace;font-size:0.78rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.4)';
-  info.innerHTML = '📄 Rapor indirildi — dosyayı açıp <b>⌘P → PDF olarak kaydet</b>';
-  document.body.appendChild(info);
-  setTimeout(() => info.remove(), 4000);
 }
+
 
 // ─── Excel Export ─────────────────────────────────────────────
 function exportExcel() {
@@ -1054,6 +1139,21 @@ function exportExcel() {
 document.getElementById('inp-qty').addEventListener('keydown', e => { if(e.key==='Enter') addRow(); });
 document.getElementById('inp-len').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-qty').focus(); });
 </script>
+<script>
+// iPhone Safari'de ana ekranda değilse banner göster
+(function() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const dismissed = sessionStorage.getItem('pwa-dismissed');
+  if (isIOS && !isStandalone && !dismissed) {
+    document.getElementById('pwa-banner').style.display = 'block';
+    document.getElementById('pwa-banner').querySelector('button').addEventListener('click', () => {
+      sessionStorage.setItem('pwa-dismissed', '1');
+    });
+  }
+})();
+</script>
+
 <footer style="border-top:1px solid #2a3040;padding:20px 40px;text-align:center;background:rgba(22,26,34,0.6);margin-top:40px">
   <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#6b7a99;letter-spacing:0.5px">
     Bu yazılım <span style="color:#f5a623;font-weight:600">İnşaat Mühendisi İlker Çelik</span> tarafından geliştirilmiştir.
